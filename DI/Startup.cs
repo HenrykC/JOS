@@ -1,7 +1,11 @@
+using AutoMapper;
 using DI.DataLayer;
 using DI.Handler;
+using DI.Helper;
 using DI.LogicNs;
 using DI.Model;
+using DI.Outlook.Logic;
+using DI.Outlook.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
@@ -29,20 +33,38 @@ namespace DI
             services.AddControllers();
 
             services.AddScoped<ILogic, Logic>();
+            services.AddScoped<IOutlookLogic, OutlookLogic>();
+
             services.AddScoped<IEFRepository, EFRepository>();
 
             services.AddDbContext<JiraContext>(options => options.UseSqlite("Data Source=jira.db"));
+
+            services.AddDbContext<JiraContext>(opt => opt.UseInMemoryDatabase("JiraDb"));
+           
+            services.Configure<OutlookConnectionProfile>(
+                Configuration.GetSection(nameof(OutlookConnectionProfile)));
+            services.AddSingleton<IOutlookConnectionProfile>(sp =>
+                    sp.GetRequiredService<IOptions<OutlookConnectionProfile>>().Value);
+
             //services.AddDbContext<JiraContext>(opt => opt.UseInMemoryDatabase("JiraDb"));
-
-
             //Access for document db Mongo
             //services.Configure<JiraDbSettings>(
             //    Configuration.GetSection(nameof(JiraDbSettings)));
-            
             //services.AddSingleton<IJiraDbSettings>(sp =>
             //        sp.GetRequiredService<IOptions<JiraDbSettings>>().Value);
 
 
+            // Auto Mapper Configurations
+            var mapperConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new MappingProfile());
+            });
+
+            IMapper mapper = mapperConfig.CreateMapper();
+            services.AddSingleton(mapper);
+
+
+            //Swagger
             services.AddSwaggerGen();
 
         }

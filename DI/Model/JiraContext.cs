@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using DI.Outlook.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace DI.Model
 {
@@ -12,6 +13,7 @@ namespace DI.Model
         }
 
         public DbSet<Ticket> Tickets { get; set; }
+        public DbSet<Appointment> Appointments { get; set; }
 
         //protected override void OnConfiguring(DbContextOptionsBuilder options)
         //    => options.UseSqlite("Data Source=jira.db");
