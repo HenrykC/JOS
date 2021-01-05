@@ -6,6 +6,7 @@ using DI.LogicNs;
 using DI.Model;
 using DI.Outlook.Logic;
 using DI.Outlook.Models;
+using DI.Outlook.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
@@ -36,11 +37,13 @@ namespace DI
             services.AddScoped<IOutlookLogic, OutlookLogic>();
 
             services.AddScoped<IEFRepository, EFRepository>();
+            services.AddScoped<IOutlookRepository, OutlookRepository>();
 
             services.AddDbContext<JiraContext>(options => options.UseSqlite("Data Source=jira.db"));
+            services.AddDbContext<OutlookDbContext>(options => options.UseSqlite("Data Source=outlook.db"));
 
-            services.AddDbContext<JiraContext>(opt => opt.UseInMemoryDatabase("JiraDb"));
-           
+            //services.AddDbContext<JiraContext>(opt => opt.UseInMemoryDatabase("JiraDb"));
+
             services.Configure<OutlookConnectionProfile>(
                 Configuration.GetSection(nameof(OutlookConnectionProfile)));
             services.AddSingleton<IOutlookConnectionProfile>(sp =>

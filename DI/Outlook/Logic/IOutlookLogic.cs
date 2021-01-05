@@ -7,7 +7,7 @@ namespace DI.Outlook.Logic
 {
     public interface IOutlookLogic
     {
-        Task<List<Outlook.Models.Appointment>> GetLastWeek();
-
+        Task<IList<Appointment>> GetLastWeek();
+        IList<Appointment> GetAllAppointments();
     }
 }

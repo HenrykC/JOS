@@ -9,20 +9,21 @@ namespace DI.Outlook.Models
     {
 
         public int Id { get; set; }
+        public string AppointmentId { get; set; }
         public String Subject { get; set; }
         public String Description { get; set; }
-        public String Organizer { get; set; }
+       // public string Organizer { get; set; }
 
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
         public TimeSpan Duration { get; }
 
-        public AppointmentType AppointmentType { get; }
+        public AppointmentType AppointmentType { get; set; }
 
-        public bool IsRecurring { get; }
-        public bool IsCancelled { get; }
-        public bool IsMeeting { get; }
-        public bool IsAllDayEvent { get; set; }
+        public bool IsRecurring { get; set; }
+        public bool IsCancelled { get; set; }
+        public bool IsMeeting { get; set; }
+       // public bool IsAllDayEvent { get; set; }
 
     }
 }

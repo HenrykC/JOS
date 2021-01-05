@@ -28,7 +28,8 @@ namespace DI.Handler
             //}
             context.Response.StatusCode = (int)statusCode;
 
-            await context.Response.WriteAsJsonAsync(new { error = exception.Message });
+            //await context.Response.WriteAsJsonAsync(new { error = exception.Message });
+            await context.Response.WriteAsync(exception.Message );
         }
     }
 }

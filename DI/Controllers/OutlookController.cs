@@ -18,7 +18,7 @@ namespace DI.Controllers
             this.outlookLogic = outlookLogic;
         }
 
-        [HttpGet]
+        [HttpPatch]
         public async Task<IActionResult> GetLastWeek()
         {
             var result = await outlookLogic.GetLastWeek();
@@ -26,5 +26,15 @@ namespace DI.Controllers
             return Ok(result);
 
         }
+
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            var result = outlookLogic.GetAllAppointments();
+
+            return Ok(result);
+
+        }
+
     }
 }
