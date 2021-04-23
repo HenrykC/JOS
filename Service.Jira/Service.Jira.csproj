@@ -9,8 +9,4 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.3" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Repository\Models\" />
-  </ItemGroup>
-
 </Project>

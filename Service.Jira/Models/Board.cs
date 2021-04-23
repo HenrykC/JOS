@@ -1,4 +1,4 @@
-﻿namespace Service.Jira.Models.Repository
+﻿namespace Service.Jira.Models
 {
     public class Board
     {

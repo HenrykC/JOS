@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Service.Jira.Models;
-using Service.Jira.Models.Repository;
 
 namespace Service.Jira.Repository
 {

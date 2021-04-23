@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Service.Jira.Logic;
+using Service.Jira.Models;
 using Service.Jira.Models.Repository;
 
 namespace Service.Jira.Controllers
@@ -13,19 +14,25 @@ namespace Service.Jira.Controllers
     [ApiController]
     public class BoardController : ControllerBase
     {
-        private readonly IBoardLogic boardLogic;
+        private readonly IBoardLogic _boardLogic;
+        private readonly ISprintLogic _sprintLogic;
 
-        public BoardController(IBoardLogic boardLogic)
+        public BoardController(IBoardLogic boardLogic, ISprintLogic sprintLogic)
         {
-            this.boardLogic = boardLogic;
+            this._boardLogic = boardLogic;
+            _sprintLogic = sprintLogic;
         }
-
 
         [HttpGet("{id}")]
         public Board GetBoardById(int id)
         {
-            return boardLogic.GetBoardById(id);
+            return _boardLogic.GetBoardById(id);
         }
 
+        [HttpGet("{id}/sprint")]
+        public IList<Sprint> GetAllSprintsByBoardId(int id)
+        {
+            return _sprintLogic.GetAllSprints(id);
+        }
     }
 }

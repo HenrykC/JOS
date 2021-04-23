@@ -34,6 +34,10 @@ namespace Service.Jira
 
             services.AddScoped<IBoardLogic, BoardLogic>();
             services.AddScoped<IBoardRepository, BoardRepository>();
+
+            services.AddScoped<ISprintLogic, SprintLogic>();
+            services.AddScoped<ISprintRepository, SprintRepository>();
+
             services.AddSingleton<IConnectionProfile>(GetConnectionProfile());
         }
 

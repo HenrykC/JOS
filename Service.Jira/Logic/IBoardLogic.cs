@@ -1,4 +1,4 @@
-﻿using Service.Jira.Models.Repository;
+﻿using Service.Jira.Models;
 
 namespace Service.Jira.Logic
 {

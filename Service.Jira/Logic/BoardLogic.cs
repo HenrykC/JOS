@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Service.Jira.Models.Repository;
+﻿using Service.Jira.Models;
 using Service.Jira.Repository;
 
 namespace Service.Jira.Logic

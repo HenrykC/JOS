@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using Service.Jira.Logic;
+using Service.Jira.Models;
 
 
 namespace Service.Jira.Controllers
@@ -8,36 +10,17 @@ namespace Service.Jira.Controllers
     [ApiController]
     public class SprintController : ControllerBase
     {
-        // GET: api/<SprintController>
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
+        private readonly ISprintLogic _sprintLogic;
 
-        // GET api/<SprintController>/5
+        public SprintController(ISprintLogic sprintLogic)
+        {
+            _sprintLogic = sprintLogic;
+        }
+        
         [HttpGet("{id}")]
-        public string Get(int id)
+        public Sprint Get(int id)
         {
-            return "value";
-        }
-
-        // POST api/<SprintController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
-        // PUT api/<SprintController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<SprintController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            return _sprintLogic.GetSprint(id);
         }
     }
 }
