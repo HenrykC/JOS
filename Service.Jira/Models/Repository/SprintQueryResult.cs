@@ -12,7 +12,14 @@ namespace Service.Jira.Models.Repository
         public int MaxResults { get; set; }
         public int StartAt { get; set; }
         public bool IsLast { get; set; }
-        [JsonProperty(PropertyName = "values")]
         public List<Sprint> Sprints { get; set; }
+    }
+
+    public class SprintIssueQueryResult
+    {
+        public int MaxResults { get; set; }
+        public int StartAt { get; set; }
+        public bool IsLast { get; set; }
+        public List<IssueDbModel> Issues { get; set; }
     }
 }

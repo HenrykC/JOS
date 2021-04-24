@@ -6,9 +6,11 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using System;
 using System.IO;
+using AutoMapper;
 using Newtonsoft.Json;
 using Service.Jira.Logic;
 using Service.Jira.Models;
+using Service.Jira.Models.Mapping;
 using Service.Jira.Repository;
 
 namespace Service.Jira
@@ -27,9 +29,13 @@ namespace Service.Jira
         {
 
             services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson(options =>
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Service.Jira", Version = "v1" });
+                
             });
 
             services.AddScoped<IBoardLogic, BoardLogic>();
@@ -38,7 +44,18 @@ namespace Service.Jira
             services.AddScoped<ISprintLogic, SprintLogic>();
             services.AddScoped<ISprintRepository, SprintRepository>();
 
+            services.AddScoped<IIssueLogic, IssueLogic>();
+            services.AddScoped<IIssueRepository, IssueRepository>();
+
             services.AddSingleton<IConnectionProfile>(GetConnectionProfile());
+
+            var mapperConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new MappingProfile());
+            });
+
+            services.AddSingleton(mapperConfig.CreateMapper());
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

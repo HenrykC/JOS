@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
 using Service.Jira.Models;
+using Newtonsoft.Json;
 using Service.Jira.Models.Repository;
 
 namespace Service.Jira.Repository
@@ -50,6 +50,5 @@ namespace Service.Jira.Repository
 
             return result;
         }
-
     }
 }
