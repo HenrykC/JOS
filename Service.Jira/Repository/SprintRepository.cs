@@ -34,7 +34,7 @@ namespace Service.Jira.Repository
             var startQueryAt = 0;
             var maxResults = 50;
             SprintQueryResult queryResult;
-            
+
             do
             {
                 queryResult = JsonConvert.DeserializeObject<SprintQueryResult>(
@@ -46,7 +46,7 @@ namespace Service.Jira.Repository
                 result.AddRange(queryResult.Sprints.Where(s => s.CompleteDate.Year > 2020).ToList());
                 startQueryAt += maxResults;
 
-            } while (!queryResult.IsLast);
+            } while (!queryResult.IsLast && queryResult.Sprints.Count > 0);
 
             return result;
         }

@@ -47,6 +47,8 @@ namespace Service.Jira
             services.AddScoped<IIssueLogic, IssueLogic>();
             services.AddScoped<IIssueRepository, IssueRepository>();
 
+            services.AddScoped<IReportLogic, ReportLogic>();
+
             services.AddSingleton<IConnectionProfile>(GetConnectionProfile());
 
             var mapperConfig = new MapperConfiguration(mc =>

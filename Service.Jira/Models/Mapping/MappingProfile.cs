@@ -7,6 +7,7 @@ namespace Service.Jira.Models.Mapping
         public MappingProfile()
         {
             CreateMap<IssueDbModel, Issue>()
+                .ForMember(x => x.Estimation, opt => opt.MapFrom(src => src.Fields.Customfield_10106))
                 .AfterMap((src, dest) =>
                 {
                     foreach (var sourcePropertyInfo in src.Fields.GetType().GetProperties())
