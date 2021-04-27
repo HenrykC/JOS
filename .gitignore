@@ -339,3 +339,4 @@ ASALocalRun/
 # BeatPulse healthcheck temp database
 healthchecksdb
 /Service.Jira/user.pwd
+/Service.Jira/dashboard.profile

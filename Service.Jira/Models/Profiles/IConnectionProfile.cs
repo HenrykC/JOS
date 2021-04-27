@@ -1,4 +1,4 @@
-﻿namespace Service.Jira.Models
+﻿namespace Service.Jira.Models.Profiles
 {
     public interface IConnectionProfile
     {

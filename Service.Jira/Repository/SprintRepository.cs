@@ -2,6 +2,7 @@
 using System.Linq;
 using Service.Jira.Models;
 using Newtonsoft.Json;
+using Service.Jira.Models.Profiles;
 using Service.Jira.Models.Repository;
 
 namespace Service.Jira.Repository

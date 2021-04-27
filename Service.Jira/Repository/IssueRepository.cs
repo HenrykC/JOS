@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Newtonsoft.Json;
 using Service.Jira.Models;
+using Service.Jira.Models.Profiles;
 using Service.Jira.Models.Repository;
 
 namespace Service.Jira.Repository

@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Service.Jira.Models;
+using Service.Jira.Models.Profiles;
 
 namespace Service.Jira.Repository
 {

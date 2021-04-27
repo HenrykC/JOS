@@ -5,12 +5,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using AutoMapper;
 using Newtonsoft.Json;
 using Service.Jira.Logic;
 using Service.Jira.Models;
 using Service.Jira.Models.Mapping;
+using Service.Jira.Models.Profiles;
 using Service.Jira.Repository;
 
 namespace Service.Jira
@@ -49,7 +51,12 @@ namespace Service.Jira
 
             services.AddScoped<IReportLogic, ReportLogic>();
 
+            services.AddScoped<IDashboardRepository, DashboardRepository>();
+
+            services.AddScoped<IGadgetProfile, GadgetProfile>();
+
             services.AddSingleton<IConnectionProfile>(GetConnectionProfile());
+            services.AddSingleton<IDashboardProfile>(GetDashboardProfile());
 
             var mapperConfig = new MapperConfiguration(mc =>
             {
@@ -90,11 +97,11 @@ namespace Service.Jira
             {
                 File.WriteAllText(fileName, JsonConvert.SerializeObject(new ConnectionProfile()
                 {
-                    UserName = "",
-                    Password = "",
-                    Url = "",
-                    Domain = "",
-                    Email = ""
+                    UserName = string.Empty,
+                    Password = string.Empty,
+                    Url = string.Empty,
+                    Domain = string.Empty,
+                    Email = string.Empty
                 },
                 Formatting.Indented));
 
@@ -106,6 +113,38 @@ namespace Service.Jira
             //ToDo: Fehlerhandling
 
             return connectionProfile;
+        }
+
+        private IDashboardProfile GetDashboardProfile()
+        {
+            var fileName = "dashboard.profile";
+
+            if (!File.Exists(fileName))
+            {
+                File.WriteAllText(fileName, JsonConvert.SerializeObject(new DashboardProfile()
+                    {
+                        BoardId = 0,
+                        DashBoardId = 0,
+                        GadgetProfiles = new List<GadgetProfile>()
+                        {
+                            new GadgetProfile()
+                            {
+                                GadgetId = 0,
+                                GadgetName = string.Empty,
+                                SprintNameFilter = string.Empty
+                            }
+                        }
+                    },
+                    Formatting.Indented));
+
+                throw new Exception();
+            }
+
+            var dashboardProfile = JsonConvert.DeserializeObject<DashboardProfile>(File.ReadAllText(fileName));
+
+            //ToDo: Fehlerhandling
+
+            return dashboardProfile;
         }
     }
 }
