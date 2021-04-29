@@ -340,3 +340,4 @@ ASALocalRun/
 healthchecksdb
 /Service.Jira/user.pwd
 /Service.Jira/dashboard.profile
+*.pwd

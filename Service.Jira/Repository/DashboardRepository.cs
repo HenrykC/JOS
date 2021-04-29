@@ -1,4 +1,5 @@
-﻿using Service.Jira.Models;
+﻿using Global.Security;
+using Service.Jira.Models;
 using Service.Jira.Models.Profiles;
 
 namespace Service.Jira.Repository
@@ -13,7 +14,7 @@ namespace Service.Jira.Repository
             _jira = Atlassian.Jira.Jira.CreateRestClient(
                 url: connectionProfile.Url,
                 username: connectionProfile.UserName,
-                password: Security.Cryption.Base64Decode(connectionProfile.Password));
+                password: Cryption.Base64Decode(connectionProfile.Password));
         }
 
         public bool UpdateGadget(int dashboardId, int gadgetId, DashboardContent content)

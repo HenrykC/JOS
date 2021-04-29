@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Global.Security;
+using Newtonsoft.Json;
 using Service.Jira.Models;
 using Service.Jira.Models.Profiles;
 
@@ -14,7 +15,7 @@ namespace Service.Jira.Repository
             _jira = Atlassian.Jira.Jira.CreateRestClient(
                url: connectionProfile.Url,
                username: connectionProfile.UserName,
-               password: Security.Cryption.Base64Decode(connectionProfile.Password));
+               password: Cryption.Base64Decode(connectionProfile.Password));
         }
 
         public Board GetBoardById(int id)

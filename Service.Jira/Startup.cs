@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using AutoMapper;
+using Global.Handler;
 using Newtonsoft.Json;
 using Service.Jira.Logic;
 using Service.Jira.Models;
@@ -76,6 +77,7 @@ namespace Service.Jira
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Service.Jira v1"));
             }
+            app.UseExceptionHandler(ex => ex.Run(ExceptionHandler.Handle));
 
             app.UseHttpsRedirection();
 

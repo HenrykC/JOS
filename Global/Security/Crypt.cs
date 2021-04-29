@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Policy;
-using System.Threading.Tasks;
-
-namespace Service.Jira.Security
+﻿namespace Global.Security
 {
     public class Cryption
     {
