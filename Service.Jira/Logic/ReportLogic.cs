@@ -104,6 +104,43 @@ namespace Service.Jira.Logic
             return sprintReport;
         }
 
+        public SprintReport GetSprintReport(int sprintId)
+        {
+            var sprintVelocity = 0.0;
+
+            var sprint = _sprintRepository.GetSprint(sprintId);
+            var issues = _issueRepository.GetAllIssuesBySprintId(sprint.Id);
+            var sprintGoal = issues.Where(i => i.Priority?.Name.Equals("Must") ?? false).ToList();
+
+            var success = sprintGoal.Count > 0 && sprintGoal.All(i =>
+                i.Resolutiondate != null && i.Resolutiondate.Value.CompareTo(sprint.EndDate) <= 0);
+
+
+            sprintVelocity = issues
+                                .Where(i => i.Resolutiondate != null)
+                                .Where(i => i.Resolutiondate.Value.CompareTo(sprint.EndDate) <= 0)
+                                .Where(i => i.Estimation.HasValue)
+                                .Sum(s => s.Estimation ?? 0.0);
+            
+            var sprintReport = new SprintReport()
+            {
+                Id = sprint.Id,
+                Name = sprint.Name,
+                Goal = sprint.Goal,
+                StartDate = sprint.StartDate,
+                EndDate = sprint.EndDate,
+                Success = success,
+                VelocitySprintGoal = sprintVelocity,
+                Velocity = issues.Where(i => i.Resolutiondate != null && i.Resolutiondate.Value.CompareTo(sprint.EndDate) <= 0)
+                    .Where(i => i.Status.Name.ToLower().Equals("done"))
+                    .Sum(s => s.Estimation ?? 0.0),
+                Scope = issues.Sum(s => s.Estimation ?? 0.0),
+                Issues = issues
+            };
+
+            return sprintReport;
+        }
+
 
         private string GenerateReportHtml(IEnumerable<SprintReport> sprints)
         {

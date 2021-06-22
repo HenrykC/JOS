@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Global.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Exchange.WebServices.Data;
 using Service.Outlook.Models;
@@ -27,17 +28,17 @@ namespace Service.Outlook.Logic
             return result;
         }
 
-        public async Task<SprintAppointmentDuration> GetAppointmentDuration(DateTime startDate, DateTime endDate, string userMail)
+        public async Task<PersonalAppointments> GetAppointmentDuration(DateTime startDate, DateTime endDate, string userMail)
         {
             var appointments = await _appointmentRepository.GetAppointmentsAsync(startDate, endDate, userMail);
-            var sprintDuration = new SprintAppointmentDuration()
+            var sprintDuration = new PersonalAppointments()
             {
-                AppointmentDurations = new List<AppointmentDuration>()
+                AppointmentDurations = new List<AppointmentDurationPerDay>()
             };
 
             foreach (DateTime day in EachDay(startDate, endDate))
             { 
-                var duration = new AppointmentDuration();
+                var duration = new AppointmentDurationPerDay();
                 
                 duration.DateTime = day;
                 duration.Duration = new TimeSpan(
