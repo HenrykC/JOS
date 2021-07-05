@@ -10,5 +10,7 @@ namespace Service.Jira.Models.Profiles
         public int BoardId { get; set; }
         public int DashBoardId { get; set; }
         public IList<GadgetProfile> GadgetProfiles { get; set; }
+
+        public string JiraServer { get; set; }
     }
 }

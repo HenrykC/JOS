@@ -5,6 +5,6 @@ namespace Service.Jira.Logic
 {
     public interface IReportLogic
     {
-        List<SprintReport> GetReport(int boardId);
+        List<SprintReport> GenerateVelocity(int boardId);
     }
 }

@@ -29,7 +29,7 @@ namespace Service.Jira.Logic
             _dashboardProfile = dashboardProfile;
         }
 
-        public List<SprintReport> GetReport(int boardId)
+        public List<SprintReport> GenerateVelocity(int boardId)
         {
             var sprintReport = new List<SprintReport>();
 
@@ -49,7 +49,7 @@ namespace Service.Jira.Logic
                 var sprintGoal = issues.Where(i => i.Priority?.Name.Equals("Must") ?? false).ToList();
 
                 var success = sprintGoal.Count > 0 && sprintGoal.All(i =>
-                    i.Resolutiondate != null && i.Resolutiondate.Value.CompareTo(sprint.EndDate) <= 0);
+                    i.Resolutiondate != null && i.Resolutiondate.Value.CompareTo(sprint.CompleteDate) <= 0);
 
                 if (success)
                     sucessSprint++;
@@ -58,7 +58,7 @@ namespace Service.Jira.Logic
 
                 foreach (var issue4Estimation in issues
                     .Where(i => i.Resolutiondate != null)
-                    .Where(i => i.Resolutiondate.Value.CompareTo(sprint.EndDate) <= 0)
+                    .Where(i => i.Resolutiondate.Value.CompareTo(sprint.CompleteDate) <= 0)
                     .Where(i => i.Estimation.HasValue)
                 )
                 {
@@ -71,6 +71,11 @@ namespace Service.Jira.Logic
                         failedVelocity += value;
                 }
 
+                if(sprint.Name.Contains("41"))
+                {
+
+                }
+
                 sprintReport.Add(
                     new SprintReport()
                     {
@@ -78,10 +83,10 @@ namespace Service.Jira.Logic
                         Name = sprint.Name,
                         Goal = sprint.Goal,
                         StartDate = sprint.StartDate,
-                        EndDate = sprint.EndDate,
+                        EndDate = sprint.CompleteDate,
                         Success = success,
                         VelocitySprintGoal = sprintVelocity,
-                        Velocity = issues.Where(i => i.Resolutiondate != null && i.Resolutiondate.Value.CompareTo(sprint.EndDate) <= 0)
+                        Velocity = issues.Where(i => i.Resolutiondate != null && i.Resolutiondate.Value.CompareTo(sprint.CompleteDate) <= 0)
                                             .Where(i => i.Status.Name.ToLower().Equals("done"))
                                             .Sum(s => s.Estimation ?? 0.0),
                         Scope = issues.Sum(s => s.Estimation ?? 0.0),
@@ -113,12 +118,12 @@ namespace Service.Jira.Logic
             var sprintGoal = issues.Where(i => i.Priority?.Name.Equals("Must") ?? false).ToList();
 
             var success = sprintGoal.Count > 0 && sprintGoal.All(i =>
-                i.Resolutiondate != null && i.Resolutiondate.Value.CompareTo(sprint.EndDate) <= 0);
+                i.Resolutiondate != null && i.Resolutiondate.Value.CompareTo(sprint.CompleteDate) <= 0);
 
 
             sprintVelocity = issues
                                 .Where(i => i.Resolutiondate != null)
-                                .Where(i => i.Resolutiondate.Value.CompareTo(sprint.EndDate) <= 0)
+                                .Where(i => i.Resolutiondate.Value.CompareTo(sprint.CompleteDate) <= 0)
                                 .Where(i => i.Estimation.HasValue)
                                 .Sum(s => s.Estimation ?? 0.0);
             
@@ -128,10 +133,10 @@ namespace Service.Jira.Logic
                 Name = sprint.Name,
                 Goal = sprint.Goal,
                 StartDate = sprint.StartDate,
-                EndDate = sprint.EndDate,
+                EndDate = sprint.CompleteDate,
                 Success = success,
                 VelocitySprintGoal = sprintVelocity,
-                Velocity = issues.Where(i => i.Resolutiondate != null && i.Resolutiondate.Value.CompareTo(sprint.EndDate) <= 0)
+                Velocity = issues.Where(i => i.Resolutiondate != null && i.Resolutiondate.Value.CompareTo(sprint.CompleteDate) <= 0)
                     .Where(i => i.Status.Name.ToLower().Equals("done"))
                     .Sum(s => s.Estimation ?? 0.0),
                 Scope = issues.Sum(s => s.Estimation ?? 0.0),
@@ -140,7 +145,6 @@ namespace Service.Jira.Logic
 
             return sprintReport;
         }
-
 
         private string GenerateReportHtml(IEnumerable<SprintReport> sprints)
         {
@@ -163,19 +167,19 @@ namespace Service.Jira.Logic
                         .Select(s => s.Key));
 
                 var success = sprint.Success ? "✓" : "X";
-                var sucessColor = sprint.Success ? "#33cc33" : "#B4472A";
+                var sucessColor = "#33cc33"; // sprint.Success ? "#33cc33" : "#B4472A";
 
                 html +=
-                    $"  <a href=\"https://jira.hiscout.com/issues/?jql=project = PT AND Sprint = {sprint.Id} \" target=\"_blank\">" +
+                    $"  <a href=\"{_dashboardProfile.JiraServer}/issues/?jql=project = PT AND Sprint = {sprint.Id} \" target=\"_blank\">" +
                     $"      <text x=\"{xDescription}\" y=\"{yDescription}\" font-size=\"12\" font-family=\"Arial\" fill=\"#404040\">{sprint.Name}({success})</text> \n" +
                     $"  </a>\n" +
 
-                    $"  <a href=\"https://jira.hiscout.com/issues/?jql=project = PT AND (Key = {sprintGoalIssues}) \" target=\"_blank\">" +
-                    $"      <rect x = \"{xSprintGoal}\" y = \"{yBar}\" width = \"{50.0 * sprint.VelocitySprintGoal}\" height = \"20\" rx = \"3\" ry = \"3\" fill = \"{sucessColor}\" ></rect> \n" +
+                    $"  <a href=\"{_dashboardProfile.JiraServer}/issues/?jql=project = PT AND (Key = {sprintGoalIssues}) \" target=\"_blank\">" +
+                    $"      <rect x = \"{xSprintGoal}\" y = \"{yBar}\" width = \"{50.0 * sprint.Velocity}\" height = \"20\" rx = \"3\" ry = \"3\" fill = \"{sucessColor}\" ></rect> \n" +
                     $"  </a>\n" +
 
-                    $"  <a href=\"https://jira.hiscout.com/issues/?jql=project = PT AND (Key = {otherIssues}) \" target=\"_blank\">" +
-                    $"      <rect x = \"{50.0 * sprint.VelocitySprintGoal + xSprintGoal}\" y = \"{yBar}\" width = \"{50.0 * (sprint.Scope - sprint.VelocitySprintGoal)}\" height = \"20\" rx = \"3\" ry = \"3\" fill = \"#2A7BB4\" ></rect> \n" +
+                    $"  <a href=\"{_dashboardProfile.JiraServer}/issues/?jql=project = PT AND (Key = {otherIssues}) \" target=\"_blank\">" +
+                    $"      <rect x = \"{50.0 * sprint.Velocity + xSprintGoal}\" y = \"{yBar}\" width = \"{50.0 * (sprint.Scope - sprint.Velocity)}\" height = \"20\" rx = \"3\" ry = \"3\" fill = \"#2A7BB4\" ></rect> \n" +
                     $"  </a>\n\n";
 
                 yDescription += 30;

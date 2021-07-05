@@ -125,6 +125,7 @@ namespace Service.Jira
             {
                 File.WriteAllText(fileName, JsonConvert.SerializeObject(new DashboardProfile()
                     {
+                        JiraServer = "https://<ServerName>/",
                         BoardId = 0,
                         DashBoardId = 0,
                         GadgetProfiles = new List<GadgetProfile>()

@@ -21,10 +21,10 @@ namespace Service.Jira.Controllers
             _reportLogic = reportLogic;
         }
         // GET: api/<ReportController>
-        [HttpGet("{boardId}")]
-        public List<SprintReport> Get(int boardId)
+        [HttpPost("{boardId}/Velocity")]
+        public List<SprintReport> GenerateVelocity(int boardId)
         {
-            return _reportLogic.GetReport(boardId);
+            return _reportLogic.GenerateVelocity(boardId);
         }
     }
 }
