@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Exchange.WebServices.Data;
 
 namespace Service.Outlook.Models
 {
@@ -24,5 +25,6 @@ namespace Service.Outlook.Models
         public bool IsMeeting { get; set; }
         public bool IsAllDayEvent { get; set; }
 
+        public LegacyFreeBusyStatus FreeBusyStatus { get; set; }
     }
 }

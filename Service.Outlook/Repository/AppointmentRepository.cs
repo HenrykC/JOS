@@ -62,20 +62,41 @@ namespace Service.Outlook.Repository
             resetWatch(watch, "Connect Exchange");
 
             CalendarView cView = new CalendarView(startDate, endDate, NUM_APPTS);
-
+            
             // Limit the properties returned to the appointment's subject, start time, and end time.
-            cView.PropertySet = new PropertySet(AppointmentSchema.Subject, AppointmentSchema.Start, AppointmentSchema.End);
+            cView.PropertySet = new PropertySet(new List<PropertyDefinitionBase>() { 
+                                                    AppointmentSchema.LegacyFreeBusyStatus,
+                                                    AppointmentSchema.Subject,
+                                                    AppointmentSchema.Start,
+                                                    AppointmentSchema.End,
+                                                    AppointmentSchema.Duration,
+                                                    AppointmentSchema.AppointmentType,
+                                                    AppointmentSchema.AppointmentState,
+                                                    AppointmentSchema.IsAllDayEvent,
+                                                    AppointmentSchema.IsMeeting,
+                                                    AppointmentSchema.IsCancelled
+                });
+
             FindItemsResults<Appointment> appointments = await calendar.FindAppointments(cView);
+
             resetWatch(watch, $"found {appointments.TotalCount} Appointments");
 
             var counter = 0;
             foreach (var appointment in appointments)
             {
-                //await appointment.Load();
                 //if (!outlookRepository.Exists(appointment.Id.UniqueId))
                 {
                     //outlookRepository.Add(mapper.Map<Appointment>(appointment));
-                    results.Add(_mapper.Map<Models.Appointment>(appointment));
+                    var app = _mapper.Map<Models.Appointment>(appointment);
+                    app.FreeBusyStatus = appointment.LegacyFreeBusyStatus;
+                    //if (appointment.End.Subtract(appointment.Start).TotalHours > 4)
+                    //{
+                    //    await appointment.Load();
+                    //    app.IsAllDayEvent = appointment.IsAllDayEvent;
+                    //    app.FreeBusyStatus = appointment.LegacyFreeBusyStatus;
+                    //}
+                    
+                    results.Add(app);
                 }
                 counter++;
                 Debug.WriteLine($"{counter}/{appointments.TotalCount}");
