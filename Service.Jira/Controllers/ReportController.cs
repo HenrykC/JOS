@@ -26,5 +26,12 @@ namespace Service.Jira.Controllers
         {
             return _reportLogic.GenerateVelocity(boardId);
         }
+
+
+        [HttpPost("Capacity")]
+        public bool GenerateCapacity([FromBody]string htmlText)
+        {
+            return _reportLogic.GenerateCapacity(htmlText);
+        }
     }
 }

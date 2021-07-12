@@ -109,6 +109,18 @@ namespace Service.Jira.Logic
             return sprintReport;
         }
 
+        public bool GenerateCapacity(string htmlText)
+        {
+            var content = new DashboardContent()
+            {
+                Html = htmlText,
+                IsConfigured = true,
+                Title = "Capacity"
+            };
+
+            return _dashboardRepository.UpdateGadget(_dashboardProfile.DashBoardId, 12136, content);
+        }
+
         public SprintReport GetSprintReport(int sprintId)
         {
             var sprintVelocity = 0.0;

@@ -99,7 +99,7 @@ namespace Service.Outlook.Repository
                     results.Add(app);
                 }
                 counter++;
-                Debug.WriteLine($"{counter}/{appointments.TotalCount}");
+                //Debug.WriteLine($"{counter}/{appointments.TotalCount}");
             }
             resetWatch(watch, $"mapped {appointments.TotalCount} Appointments");
 
@@ -109,7 +109,7 @@ namespace Service.Outlook.Repository
         private void resetWatch(Stopwatch watch, string message)
         {
             watch.Stop();
-            Debug.WriteLine($"{watch.ElapsedMilliseconds} ms: {message}");
+           // Debug.WriteLine($"{watch.ElapsedMilliseconds} ms: {message}");
             watch.Restart();
         }
     }
