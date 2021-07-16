@@ -5,9 +5,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Global.Models;
+using Global.Models.Outlook;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Exchange.WebServices.Data;
-using Service.Outlook.Models;
 using Service.Outlook.Repository;
 
 namespace Service.Outlook.Logic
@@ -28,13 +29,11 @@ namespace Service.Outlook.Logic
             return result;
         }
 
-        public async Task<PersonalCapacity> GetAppointmentDuration(DateTime startDate, DateTime endDate, string userMail)
+        public async Task<List<DailyCapacity>> GetAppointmentDuration(DateTime startDate, DateTime endDate, string userMail)
         {
             var appointments = await _appointmentRepository.GetAppointmentsAsync(startDate, endDate, userMail);
-            var personalCapacity = new PersonalCapacity();
-
-
             var startWorking = new TimeSpan(7, 00, 0);
+
             List<TimeSpan> meetingIntervals = Enumerable.Range(0, 20) // till 07:00- 11:45
                 .Select(x => x * 15)
                 .Select(x => startWorking + TimeSpan.FromMinutes(x))
@@ -45,11 +44,19 @@ namespace Service.Outlook.Logic
                 .Select(x => x * 15 * 60)
                 .Select(x => startWorking + TimeSpan.FromSeconds(x)));
 
-            Dictionary<DateTime, double> capacity = new Dictionary<DateTime, double>();
+            //Dictionary<DateTime, double> capacity = new Dictionary<DateTime, double>();
+            List<DailyCapacity> capacity = new List<DailyCapacity>();
+
 
             foreach (DateTime day in EachDay(startDate, endDate))
             {
-                capacity.Add(day, 8);
+                var dailyCapacity = new DailyCapacity()
+                {
+                    Date = day,
+                    Capacity = 8,
+                    UserName = userMail
+                };
+
                 foreach (TimeSpan span in meetingIntervals)
                 {
                     if (appointments.Any(a => a.Start <= day.Add(span) && a.End >= day.Add(span).AddMinutes(15) &&
@@ -58,21 +65,17 @@ namespace Service.Outlook.Logic
                                                a.FreeBusyStatus == LegacyFreeBusyStatus.WorkingElsewhere ||
                                                a.FreeBusyStatus == LegacyFreeBusyStatus.Tentative)))
                     {
-                        if (capacity[day] == 0) continue;
-                        capacity[day] -= 0.25;
+
+                        if (dailyCapacity.Capacity < 0.1) continue;
+
+                        dailyCapacity.Capacity -= 0.25;
                     }
                 }
+                capacity.Add(dailyCapacity);
             }
 
-            personalCapacity.Capacity = capacity;
-            personalCapacity.SprintCapacity = 8 * personalCapacity.Capacity.Count;
-            personalCapacity.HandsOnKeyboard = personalCapacity.Capacity.Sum(s => s.Value);
-            personalCapacity.UserName = userMail.Contains('@') ? userMail.Split("@")[0] : userMail;
-
-
-            return personalCapacity;
+            return capacity;
         }
-
 
         private void SetDetails()
         {

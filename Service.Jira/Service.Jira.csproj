@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <UserSecretsId>f81933b1-fb3c-4337-a846-ec48fdcb4a40</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,5 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Global\Global.csproj" />
   </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties properties_4launchsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 
 </Project>

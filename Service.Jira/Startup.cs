@@ -38,7 +38,7 @@ namespace Service.Jira
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Service.Jira", Version = "v1" });
-                
+
             });
 
             services.AddScoped<IBoardLogic, BoardLogic>();
@@ -71,12 +71,10 @@ namespace Service.Jira
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Service.Jira v1"));
-            }
+            app.UseDeveloperExceptionPage();
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Service.Jira v1"));
+
             app.UseExceptionHandler(ex => ex.Run(ExceptionHandler.Handle));
 
             app.UseHttpsRedirection();
@@ -124,11 +122,11 @@ namespace Service.Jira
             if (!File.Exists(fileName))
             {
                 File.WriteAllText(fileName, JsonConvert.SerializeObject(new DashboardProfile()
-                    {
-                        JiraServer = "https://<ServerName>/",
-                        BoardId = 0,
-                        DashBoardId = 0,
-                        GadgetProfiles = new List<GadgetProfile>()
+                {
+                    JiraServer = "https://<ServerName>/",
+                    BoardId = 0,
+                    DashBoardId = 0,
+                    GadgetProfiles = new List<GadgetProfile>()
                         {
                             new GadgetProfile()
                             {
@@ -137,7 +135,7 @@ namespace Service.Jira
                                 SprintNameFilter = string.Empty
                             }
                         }
-                    },
+                },
                     Formatting.Indented));
 
                 throw new Exception();
