@@ -91,7 +91,7 @@ namespace Service.Jira
 
         private IConnectionProfile GetConnectionProfile()
         {
-            var fileName = "user.pwd";
+            var fileName = "D:\\JOS\\Jira\\user.pwd";
 
             if (!File.Exists(fileName))
             {
@@ -117,7 +117,7 @@ namespace Service.Jira
 
         private IDashboardProfile GetDashboardProfile()
         {
-            var fileName = "dashboard.profile";
+            var fileName = "D:\\JOS\\Jira\\dashboard.profile";
 
             if (!File.Exists(fileName))
             {
@@ -140,7 +140,6 @@ namespace Service.Jira
 
                 throw new Exception();
             }
-
             var dashboardProfile = JsonConvert.DeserializeObject<DashboardProfile>(File.ReadAllText(fileName));
 
             //ToDo: Fehlerhandling

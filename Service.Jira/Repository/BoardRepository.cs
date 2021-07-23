@@ -1,4 +1,5 @@
-﻿using Global.Security;
+﻿using System;
+using Global.Security;
 using Newtonsoft.Json;
 using Service.Jira.Models;
 using Service.Jira.Models.Profiles;
@@ -12,6 +13,7 @@ namespace Service.Jira.Repository
 
         public BoardRepository(IConnectionProfile connectionProfile)
         {
+
             _jira = Atlassian.Jira.Jira.CreateRestClient(
                url: connectionProfile.Url,
                username: connectionProfile.UserName,

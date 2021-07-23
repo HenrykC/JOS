@@ -22,6 +22,7 @@ namespace Service.Jira
                 {
                     webBuilder.UseStartup<Startup>()
                                 .UseUrls("https://localhost:6000/");
-                });
+                })
+                .UseWindowsService();
     }
 }

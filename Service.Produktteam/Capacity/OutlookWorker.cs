@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -16,7 +17,7 @@ namespace Service.Produktteam.Capacity
 {
     public class OutlookWorker : BackgroundService
     {
-        public IServiceScopeFactory _serviceScopeFactory;
+        private readonly IServiceScopeFactory _serviceScopeFactory;
 
         public OutlookWorker(IServiceScopeFactory serviceScopeFactory)
         {
@@ -45,11 +46,13 @@ namespace Service.Produktteam.Capacity
                 Console.WriteLine("Wait for next cycle: {0:c}", TimeSpan.FromMilliseconds(sleepTime));
 
                 Thread.Sleep(sleepTime);
-                await SetCapacity();
+                await ReadCapacityFromOutlook();
             }
         }
 
-        private async Task SetCapacity()
+        
+
+        private async Task ReadCapacityFromOutlook()
         {
             var produktteam = new List<string>();
 

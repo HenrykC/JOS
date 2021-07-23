@@ -75,7 +75,7 @@ namespace Service.Outlook
         }
         private IOutlookConnectionProfile GetConnectionProfile()
         {
-            var fileName = "user.pwd";
+            var fileName = "D:\\JOS\\Outlook\\user.pwd";
 
             if (!File.Exists(fileName))
             {
@@ -94,6 +94,11 @@ namespace Service.Outlook
             }
 
             var connectionProfile = JsonConvert.DeserializeObject<OutlookConnectionProfile>(File.ReadAllText(fileName));
+
+            if (string.IsNullOrEmpty(connectionProfile.UserName))
+            {
+                throw new Exception($"File not found: {Directory.GetCurrentDirectory()}");
+            }
 
             //ToDo: Fehlerhandling
 

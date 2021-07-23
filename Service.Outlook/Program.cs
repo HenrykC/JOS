@@ -21,7 +21,8 @@ namespace Service.Outlook
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>()
-                                .UseUrls("https://localhost:5000/"); ;
-                });
+                                .UseUrls("https://localhost:5000/");
+                })
+                .UseWindowsService();
     }
 }
