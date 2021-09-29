@@ -6,6 +6,6 @@ namespace Service.Jira.Logic
     public interface IReportLogic
     {
         List<SprintReport> GenerateVelocity(int boardId);
-        bool GenerateCapacity(string htmlText);
+        bool GenerateCapacity(int gadgetId, string htmlText);
     }
 }

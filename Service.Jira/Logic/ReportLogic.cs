@@ -71,7 +71,7 @@ namespace Service.Jira.Logic
                         failedVelocity += value;
                 }
 
-                if(sprint.Name.Contains("41"))
+                if (sprint.Name.Contains("41"))
                 {
 
                 }
@@ -109,7 +109,7 @@ namespace Service.Jira.Logic
             return sprintReport;
         }
 
-        public bool GenerateCapacity(string htmlText)
+        public bool GenerateCapacity(int gadgetId, string htmlText)
         {
             var content = new DashboardContent()
             {
@@ -118,7 +118,7 @@ namespace Service.Jira.Logic
                 Title = "Capacity"
             };
 
-            return _dashboardRepository.UpdateGadget(_dashboardProfile.DashBoardId, 12136, content);
+            return _dashboardRepository.UpdateGadget(_dashboardProfile.DashBoardId, gadgetId, content);
         }
 
         public SprintReport GetSprintReport(int sprintId)
@@ -138,7 +138,7 @@ namespace Service.Jira.Logic
                                 .Where(i => i.Resolutiondate.Value.CompareTo(sprint.CompleteDate) <= 0)
                                 .Where(i => i.Estimation.HasValue)
                                 .Sum(s => s.Estimation ?? 0.0);
-            
+
             var sprintReport = new SprintReport()
             {
                 Id = sprint.Id,

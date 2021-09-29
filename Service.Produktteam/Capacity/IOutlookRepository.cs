@@ -10,5 +10,7 @@ namespace Service.Produktteam.Capacity
         int Add(List<DailyCapacity> capacity);
 
         DateTime LastCapacityMeasure();
+        double GetCapacity(List<string> userNames, DateTime startDate, DateTime endDate);
+        List<DailyCapacity> GetDailyCapacity(string userName, DateTime startDate, DateTime endDate);
     }
 }

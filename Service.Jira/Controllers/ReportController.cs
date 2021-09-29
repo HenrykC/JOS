@@ -28,10 +28,10 @@ namespace Service.Jira.Controllers
         }
 
 
-        [HttpPost("Capacity")]
-        public bool GenerateCapacity([FromBody]string htmlText)
+        [HttpPost("Capacity/{gadgetId}")]
+        public bool GenerateCapacity(int gadgetId, [FromBody] string htmlText)
         {
-            return _reportLogic.GenerateCapacity(htmlText);
+            return _reportLogic.GenerateCapacity(gadgetId, htmlText);
         }
     }
 }

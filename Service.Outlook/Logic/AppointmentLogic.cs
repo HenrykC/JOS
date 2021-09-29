@@ -62,8 +62,7 @@ namespace Service.Outlook.Logic
                     if (appointments.Any(a => a.Start <= day.Add(span) && a.End >= day.Add(span).AddMinutes(15) &&
                                               (a.FreeBusyStatus == LegacyFreeBusyStatus.Busy ||
                                                a.FreeBusyStatus == LegacyFreeBusyStatus.OOF ||
-                                               a.FreeBusyStatus == LegacyFreeBusyStatus.WorkingElsewhere ||
-                                               a.FreeBusyStatus == LegacyFreeBusyStatus.Tentative)))
+                                               a.FreeBusyStatus == LegacyFreeBusyStatus.WorkingElsewhere)))
                     {
 
                         if (dailyCapacity.Capacity < 0.1) continue;
