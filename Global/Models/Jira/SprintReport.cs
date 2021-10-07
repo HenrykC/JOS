@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Service.Jira.Models
+namespace Global.Models.Jira
 {
     public class SprintReport
     {

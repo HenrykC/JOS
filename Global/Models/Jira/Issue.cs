@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 
 //using Atlassian.Jira;
 
 
-namespace Service.Jira.Models
+namespace Global.Models.Jira
 {
 
     public class Issue

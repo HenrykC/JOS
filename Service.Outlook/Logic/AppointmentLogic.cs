@@ -40,7 +40,7 @@ namespace Service.Outlook.Logic
                 .ToList();
 
             startWorking = new TimeSpan(13, 00, 0);
-            meetingIntervals.AddRange(Enumerable.Range(0, 20) // till 13:00 - 17:45
+            meetingIntervals.AddRange(Enumerable.Range(0, 12) // till 13:00 - 15:45
                 .Select(x => x * 15 * 60)
                 .Select(x => startWorking + TimeSpan.FromSeconds(x)));
 

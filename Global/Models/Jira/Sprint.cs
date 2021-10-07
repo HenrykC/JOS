@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace Service.Jira.Models
+namespace Global.Models.Jira
 {
     public class Sprint
     {

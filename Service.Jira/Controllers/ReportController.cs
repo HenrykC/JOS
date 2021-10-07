@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Global.Models.Jira;
 using Service.Jira.Logic;
 using Service.Jira.Models;
 
@@ -20,13 +21,17 @@ namespace Service.Jira.Controllers
         {
             _reportLogic = reportLogic;
         }
-        // GET: api/<ReportController>
+        [HttpGet("{boardId}/Velocity")]
+        public List<SprintReport> GetSprintReports(int boardId, DateTime? startDate, DateTime? endDate)
+        {
+            return _reportLogic.GetSprintReports(boardId, startDate, endDate);
+        }
+
         [HttpPost("{boardId}/Velocity")]
         public List<SprintReport> GenerateVelocity(int boardId)
         {
             return _reportLogic.GenerateVelocity(boardId);
         }
-
 
         [HttpPost("Capacity/{gadgetId}")]
         public bool GenerateCapacity(int gadgetId, [FromBody] string htmlText)

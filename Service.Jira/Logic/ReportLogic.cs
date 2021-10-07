@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Global.Models.Jira;
 using Newtonsoft.Json;
 using Service.Jira.Models;
 using Service.Jira.Models.Profiles;
@@ -29,7 +30,7 @@ namespace Service.Jira.Logic
             _dashboardProfile = dashboardProfile;
         }
 
-        public List<SprintReport> GenerateVelocity(int boardId)
+        public List<SprintReport> GetSprintReports(int boardId, DateTime? startDate = null, DateTime? endDate = null)
         {
             var sprintReport = new List<SprintReport>();
 
@@ -40,6 +41,16 @@ namespace Service.Jira.Logic
             var failedSprint = 0;
 
             var sprintList = _sprintRepository.GetAllSprints(boardId);
+
+            if (startDate != null && startDate.Value.CompareTo(new DateTime()) != 0)
+            {
+                sprintList = sprintList.Where(w => w.StartDate.CompareTo(startDate) >= 0).ToList();
+            }
+
+            if (endDate != null && endDate.Value.CompareTo(new DateTime()) != 0)
+            {
+                sprintList = sprintList.Where(w => w.EndDate.CompareTo(endDate) <= 0).ToList();
+            }
 
             foreach (var sprint in sprintList)
             {
@@ -71,28 +82,31 @@ namespace Service.Jira.Logic
                         failedVelocity += value;
                 }
 
-                if (sprint.Name.Contains("41"))
-                {
-
-                }
-
                 sprintReport.Add(
-                    new SprintReport()
-                    {
-                        Id = sprint.Id,
-                        Name = sprint.Name,
-                        Goal = sprint.Goal,
-                        StartDate = sprint.StartDate,
-                        EndDate = sprint.CompleteDate,
-                        Success = success,
-                        VelocitySprintGoal = sprintVelocity,
-                        Velocity = issues.Where(i => i.Resolutiondate != null && i.Resolutiondate.Value.CompareTo(sprint.CompleteDate) <= 0)
-                                            .Where(i => i.Status.Name.ToLower().Equals("done"))
-                                            .Sum(s => s.Estimation ?? 0.0),
-                        Scope = issues.Sum(s => s.Estimation ?? 0.0),
-                        Issues = issues
-                    });
+                     new SprintReport()
+                     {
+                         Id = sprint.Id,
+                         Name = sprint.Name,
+                         Goal = sprint.Goal,
+                         StartDate = sprint.StartDate,
+                         EndDate = sprint.CompleteDate,
+                         Success = success,
+                         VelocitySprintGoal = sprintVelocity,
+                         Velocity = issues.Where(i => i.Resolutiondate != null && i.Resolutiondate.Value.CompareTo(sprint.CompleteDate) <= 0)
+                                             .Where(i => i.Status.Name.ToLower().Equals("done"))
+                                             .Sum(s => s.Estimation ?? 0.0),
+                         Scope = issues.Sum(s => s.Estimation ?? 0.0),
+                         Issues = issues
+                     });
             }
+
+            return sprintReport;
+        }
+
+
+        public List<SprintReport> GenerateVelocity(int boardId)
+        {
+            var sprintReport = GetSprintReports(boardId);
 
             foreach (var gadgetProfile in _dashboardProfile.GadgetProfiles)
             {

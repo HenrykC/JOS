@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Global.Models.Jira;
 using Global.Security;
 using Newtonsoft.Json;
 using Service.Jira.Models;

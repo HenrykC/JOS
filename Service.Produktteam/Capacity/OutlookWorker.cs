@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -7,11 +6,11 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Global.Models.Jira;
 using Global.Models.Outlook;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Newtonsoft.Json;
 using Service.Produktteam.Models;
 
 namespace Service.Produktteam.Capacity
@@ -29,7 +28,7 @@ namespace Service.Produktteam.Capacity
         {
             Thread.Sleep(5000);
 
-            // while (true)
+            //while (true)
             {
                 var scheduledTime = DateTime.MinValue;
                 using (var scope = _serviceScopeFactory.CreateScope())
@@ -51,25 +50,50 @@ namespace Service.Produktteam.Capacity
                 var runAt = DateTime.Now.AddMilliseconds(sleepTime).ToString("dddd, HH:mm");
                 Console.WriteLine($"Run next cycle: {runAt} Uhr");
 
-                //Thread.Sleep(sleepTime);
+                // Thread.Sleep(sleepTime);
                 //await ReadCapacityFromOutlook();
-                await WriteCapacityToJiraDashboard();
-                await WriteCapacityToJiraDashboard(true);
+                //await WriteCapacityToJiraDashboard();
+                //await WriteCapacityToJiraDashboard(true);
+                try
+                {
+                    await WriteVelocityToJiraDashboard();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    throw;
+                }
+            }
+        }
+
+        private async Task WriteVelocityToJiraDashboard()
+        {
+            var teamSettings = GetTeamSettings().Where(setting => setting.EndDate == null && setting.CreateReport).ToList();
+
+            foreach (var teamSetting in teamSettings)
+            {
+                var client = new HttpClient();
+                var startDate =teamSetting.StartDate.ToString("s");
+                var result = await client.GetFromJsonAsync<List<SprintReport>>($"https://localhost:6000/api/report/57/Velocity?startDate={startDate}");
 
             }
         }
 
-        private async Task WriteCapacityToJiraDashboard(bool calculateNextSprint = false)
+        private List<TeamSetting> GetTeamSettings()
         {
-            var teamSettings = new List<TeamSetting>();
-
             using var scope = _serviceScopeFactory.CreateScope();
             var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
-
-            teamSettings = configuration.GetSection("TeamSettings")
+            var teamSettings = configuration.GetSection("TeamSettings")
                 .Get<List<TeamSetting>>()
-                .Where(setting => setting.EndDate == null && setting.CreateReport)
                 .ToList();
+
+            return teamSettings;
+        }
+
+        private async Task WriteCapacityToJiraDashboard(bool calculateNextSprint = false)
+        {
+            using var scope = _serviceScopeFactory.CreateScope();
+            var teamSettings = GetTeamSettings().Where(setting => setting.EndDate == null && setting.CreateReport).ToList();
 
 
             foreach (var teamSetting in teamSettings)
@@ -97,23 +121,12 @@ namespace Service.Produktteam.Capacity
 
                 html += "\"";
                 var client = new HttpClient();
+                var gadgetId = calculateNextSprint
+                                        ? teamSetting.NextSprintGadgetId
+                                        : teamSetting.ActualSprintGadgetId;
+                var result = await client.PostAsync($"https://localhost:6000/api/report/Capacity/{gadgetId}", new StringContent(html, Encoding.UTF8, "application/json"));
 
-                try
-                {
-                    var gadgetId = calculateNextSprint
-                        ? teamSetting.NextSprintGadgetId
-                        : teamSetting.ActualSprintGadgetId;
-                    var result = await client.PostAsync($"https://localhost:6000/api/report/Capacity/{gadgetId}", new StringContent(html, Encoding.UTF8, "application/json"));
-
-                    result.EnsureSuccessStatusCode();
-                }
-                catch (Exception ex)
-                {
-
-
-                }
-
-
+                result.EnsureSuccessStatusCode();
             }
         }
 
@@ -164,29 +177,30 @@ namespace Service.Produktteam.Capacity
         private async Task ReadCapacityFromOutlook()
         {
             var produktteam = new List<string>();
+            var teamSettings = GetTeamSettings();
 
-            using (var scope = _serviceScopeFactory.CreateScope())
-            {
-                var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
-                var teamSettings = configuration.GetSection("TeamSettings").Get<List<TeamSetting>>();
+            produktteam = teamSettings
+                .Where(setting => setting.EndDate == null)
+                .SelectMany(s => s.Email)
+                .Distinct()
+                .ToList();
 
-                produktteam = teamSettings
-                    .Where(setting => setting.EndDate == null)
-                    .SelectMany(s => s.Email)
-                    .Distinct()
-                    .ToList();
-            }
 
             var startDate = DateTime.Now.Date.AddDays(-7).ToString("yyyy-MM-dd");
             var endDate = DateTime.Now.Date.AddDays(15).ToString("yyyy-MM-dd") + "T23:59:59.000Z";
 
             var client = new HttpClient();
+
+            var measureTimeStamp = DateTime.Now.Date
+                                        .AddHours(DateTime.Now.Hour)
+                                        .AddMinutes(DateTime.Now.Minute)
+                                        .AddSeconds(DateTime.Now.Second);
             foreach (var member in produktteam)
             {
                 try
                 {
                     var result = await client.GetFromJsonAsync<List<DailyCapacity>>($"https://localhost:5000/api/Appointment/Capacity/?startDate={startDate}&endDate={endDate}&usermail={member}");
-
+                    result.ForEach(r => r.MeasureTimeStamp = measureTimeStamp);
                     using (var scope = _serviceScopeFactory.CreateScope())
                     {
                         var outlookRepository = scope.ServiceProvider.GetRequiredService<IOutlookRepository>();

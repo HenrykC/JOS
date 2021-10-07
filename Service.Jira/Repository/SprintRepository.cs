@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Global.Models.Jira;
 using Global.Security;
 using Service.Jira.Models;
 using Newtonsoft.Json;

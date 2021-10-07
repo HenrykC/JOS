@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Global.Models.Jira;
 using Newtonsoft.Json;
 
 namespace Service.Jira.Models.Repository

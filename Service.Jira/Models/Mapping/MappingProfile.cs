@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Global.Models.Jira;
 
 namespace Service.Jira.Models.Mapping
 {

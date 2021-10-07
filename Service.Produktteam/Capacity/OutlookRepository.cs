@@ -43,7 +43,7 @@ namespace Service.Produktteam.Capacity
         {
             using var dbContext = new OutlookDbContext(options);
             var lastMeasure = dbContext.PersonalCapacities.Max(m => m.MeasureTimeStamp);
-            lastMeasure = lastMeasure.AddSeconds(-60);
+            //lastMeasure = lastMeasure.AddSeconds(-60);
             startDate = startDate.Date;
             endDate = endDate.Date.AddHours(23).AddMinutes(59).AddSeconds(59);
 
@@ -67,7 +67,7 @@ namespace Service.Produktteam.Capacity
         {
             using var dbContext = new OutlookDbContext(options);
             var lastMeasure = dbContext.PersonalCapacities.Max(m => m.MeasureTimeStamp);
-            lastMeasure = lastMeasure.AddSeconds(-60);
+            //lastMeasure = lastMeasure.AddSeconds(-60);
             startDate = startDate.Date;
             endDate = endDate.Date.AddHours(23).AddMinutes(59).AddSeconds(59);
             var result = dbContext.PersonalCapacities
