@@ -104,21 +104,17 @@ namespace Service.Jira.Logic
         }
 
 
-        public List<SprintReport> GenerateVelocity(int boardId)
+        public List<SprintReport> GenerateSprintHistory(JiraSettings jiraSettings)
         {
-            var sprintReport = GetSprintReports(boardId);
-
-            foreach (var gadgetProfile in _dashboardProfile.GadgetProfiles)
+            var sprintReport = GetSprintReports(jiraSettings.JiraBoardId);
+            var content = new DashboardContent()
             {
-                var content = new DashboardContent()
-                {
-                    Html = GenerateReportHtml(sprintReport.Where(w => w.Name.ToLower().Contains(gadgetProfile.SprintNameFilter.ToLower())).ToList()),
-                    IsConfigured = true,
-                    Title = gadgetProfile.GadgetName
-                };
+                Html = GenerateReportHtml(sprintReport.Where(w => w.Name.ToLower().Contains(jiraSettings.FilterSprintName.ToLower())).ToList()),
+                IsConfigured = true,
+                Title = "Sprint History"
+            };
 
-                _dashboardRepository.UpdateGadget(_dashboardProfile.DashBoardId, gadgetProfile.GadgetId, content);
-            }
+            _dashboardRepository.UpdateGadget(_dashboardProfile.DashBoardId, jiraSettings.SprintSummaryGadgetId, content);
 
             return sprintReport;
         }
@@ -180,32 +176,39 @@ namespace Service.Jira.Logic
             var yDescription = 50;
             var yBar = 35;
 
-            var xSprintGoal = 160;
+            var xPositionSprintGoal = 160;
 
             foreach (var sprint in sprints)
             {
                 var sprintGoalIssues = string.Join(" OR Key = ",
-                    sprint.Issues.Where(i => i.Priority?.Name.Equals("Must") ?? false)
+                    sprint.Issues.Where(i => i.Resolutiondate != null && i.Resolutiondate.Value.CompareTo(sprint.EndDate) <= 0)
+                        .Where(i => i.Status.Name.ToLower().Equals("done"))
                         .Select(s => s.Key));
 
                 var otherIssues = string.Join(" OR Key = ",
-                    sprint.Issues.Where(i => !i.Priority?.Name.Equals("Must") ?? true)
+                    sprint.Issues.Where(i => i.Resolutiondate == null || i.Resolutiondate.Value.CompareTo(sprint.EndDate) >= 0)
                         .Select(s => s.Key));
 
                 var success = sprint.Success ? "✓" : "X";
-                var sucessColor = "#33cc33"; // sprint.Success ? "#33cc33" : "#B4472A";
+                var successColor = sprint.Success ? "green" : "red";
+
+                var velocityColor = "#90EE90";
+                var plannedColor = "#ADD8E6";
 
                 html +=
                     $"  <a href=\"{_dashboardProfile.JiraServer}/issues/?jql=project = PT AND Sprint = {sprint.Id} \" target=\"_blank\">" +
                     $"      <text x=\"{xDescription}\" y=\"{yDescription}\" font-size=\"12\" font-family=\"Arial\" fill=\"#404040\">{sprint.Name}({success})</text> \n" +
                     $"  </a>\n" +
 
+
+                    //$"<rect x = \"{xPositionSprintGoal}\" y = \"{yBar}\" width = \"{50.0 * sprint.Scope}\" height = \"20\" rx = \"3\" ry = \"3\" style=\"stroke:{successColor};stroke-width:1;fill-opacity:0.0;stroke-opacity:0.9\" ></rect> \n" +
+
                     $"  <a href=\"{_dashboardProfile.JiraServer}/issues/?jql=project = PT AND (Key = {sprintGoalIssues}) \" target=\"_blank\">" +
-                    $"      <rect x = \"{xSprintGoal}\" y = \"{yBar}\" width = \"{50.0 * sprint.Velocity}\" height = \"20\" rx = \"3\" ry = \"3\" fill = \"{sucessColor}\" ></rect> \n" +
+                    $"      <rect x = \"{xPositionSprintGoal}\" y = \"{yBar}\" width = \"{50.0 * sprint.Velocity}\" height = \"20\" rx = \"3\" ry = \"3\" fill = \"{velocityColor}\" ></rect> \n" +
                     $"  </a>\n" +
 
                     $"  <a href=\"{_dashboardProfile.JiraServer}/issues/?jql=project = PT AND (Key = {otherIssues}) \" target=\"_blank\">" +
-                    $"      <rect x = \"{50.0 * sprint.Velocity + xSprintGoal}\" y = \"{yBar}\" width = \"{50.0 * (sprint.Scope - sprint.Velocity)}\" height = \"20\" rx = \"3\" ry = \"3\" fill = \"#2A7BB4\" ></rect> \n" +
+                    $"      <rect x = \"{50.0 * sprint.Velocity + xPositionSprintGoal}\" y = \"{yBar}\" width = \"{50.0 * (sprint.Scope - sprint.Velocity)}\" height = \"20\" rx = \"3\" ry = \"3\" fill = \"{plannedColor}\" ></rect> \n" +
                     $"  </a>\n\n";
 
                 yDescription += 30;
@@ -224,9 +227,9 @@ namespace Service.Jira.Logic
                    "</style> \n" +
                    $"<svg id=\"statSvg\" xmlns=\"http://www.w3.org/2000/svg\" width=\"800\" height=\"{yBar + 50}\"> \n" +
                    html +
-                   $"	<line x1=\"{xSprintGoal - 1}\" y1=\"10\" x2=\"{xSprintGoal - 1}\" y2=\"{yBar}\" stroke-width=\"2\" stroke=\"#808080\"></line> \n" +
-                   $"	<line x1=\"{5 * 50 + xSprintGoal - 1}\" y1=\"10\" x2=\"{5 * 50 + xSprintGoal - 1}\" y2=\"{yBar}\" stroke-width=\"1\" stroke=\"#808080\"></line> \n" +
-                   $"	<line x1=\"{10 * 50 + xSprintGoal - 1}\" y1=\"10\" x2=\"{10 * 50 + xSprintGoal - 1}\" y2=\"{yBar}\" stroke-width=\"1\" stroke=\"#808080\"></line> \n" +
+                   $"	<line x1=\"{xPositionSprintGoal - 1}\" y1=\"10\" x2=\"{xPositionSprintGoal - 1}\" y2=\"{yBar}\" stroke-width=\"2\" stroke=\"#808080\"></line> \n" +
+                   $"	<line x1=\"{5 * 50 + xPositionSprintGoal - 1}\" y1=\"10\" x2=\"{5 * 50 + xPositionSprintGoal - 1}\" y2=\"{yBar}\" stroke-width=\"1\" stroke=\"#808080\"></line> \n" +
+                   $"	<line x1=\"{10 * 50 + xPositionSprintGoal - 1}\" y1=\"10\" x2=\"{10 * 50 + xPositionSprintGoal - 1}\" y2=\"{yBar}\" stroke-width=\"1\" stroke=\"#808080\"></line> \n" +
 
                    "</svg> \n";
 

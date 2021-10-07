@@ -8,7 +8,7 @@ namespace Service.Jira.Logic
     public interface IReportLogic
     {
         List<SprintReport> GetSprintReports(int boardId, DateTime? startDate = null, DateTime? endDate = null);
-        List<SprintReport> GenerateVelocity(int boardId);
+        List<SprintReport> GenerateSprintHistory(JiraSettings jiraSettings);
         bool GenerateCapacity(int gadgetId, string htmlText);
     }
 }

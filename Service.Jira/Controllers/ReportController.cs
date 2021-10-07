@@ -1,11 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Global.Models.Jira;
 using Service.Jira.Logic;
-using Service.Jira.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -27,10 +24,10 @@ namespace Service.Jira.Controllers
             return _reportLogic.GetSprintReports(boardId, startDate, endDate);
         }
 
-        [HttpPost("{boardId}/Velocity")]
-        public List<SprintReport> GenerateVelocity(int boardId)
+        [HttpPost("SprintHistory")]
+        public List<SprintReport> GenerateSprintSummary([FromBody] JiraSettings jiraSettings)
         {
-            return _reportLogic.GenerateVelocity(boardId);
+            return _reportLogic.GenerateSprintHistory(jiraSettings);
         }
 
         [HttpPost("Capacity/{gadgetId}")]

@@ -11,6 +11,7 @@ using Global.Models.Outlook;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json;
 using Service.Produktteam.Models;
 
 namespace Service.Produktteam.Capacity
@@ -54,6 +55,7 @@ namespace Service.Produktteam.Capacity
                 //await ReadCapacityFromOutlook();
                 //await WriteCapacityToJiraDashboard();
                 //await WriteCapacityToJiraDashboard(true);
+                //await WriteSprintSummaryToJiraDashboard();
                 try
                 {
                     await WriteVelocityToJiraDashboard();
@@ -66,6 +68,19 @@ namespace Service.Produktteam.Capacity
             }
         }
 
+        private async Task WriteSprintSummaryToJiraDashboard()
+        {
+            var teamSettings = GetTeamSettings().Where(setting => setting.EndDate == null && setting.CreateReport).ToList();
+
+            foreach (var teamSetting in teamSettings)
+            {
+                var client = new HttpClient();
+                var startDate = teamSetting.StartDate.ToString("s");
+                var result = await client.PostAsync($"https://localhost:6000/api/report/SprintHistory",
+                    new StringContent(JsonConvert.SerializeObject(teamSetting.JiraSettings), Encoding.UTF8, "application/json"));
+            }
+        }
+
         private async Task WriteVelocityToJiraDashboard()
         {
             var teamSettings = GetTeamSettings().Where(setting => setting.EndDate == null && setting.CreateReport).ToList();
@@ -73,7 +88,7 @@ namespace Service.Produktteam.Capacity
             foreach (var teamSetting in teamSettings)
             {
                 var client = new HttpClient();
-                var startDate =teamSetting.StartDate.ToString("s");
+                var startDate = teamSetting.StartDate.ToString("s");
                 var result = await client.GetFromJsonAsync<List<SprintReport>>($"https://localhost:6000/api/report/57/Velocity?startDate={startDate}");
 
             }
@@ -122,8 +137,8 @@ namespace Service.Produktteam.Capacity
                 html += "\"";
                 var client = new HttpClient();
                 var gadgetId = calculateNextSprint
-                                        ? teamSetting.NextSprintGadgetId
-                                        : teamSetting.ActualSprintGadgetId;
+                                        ? teamSetting.JiraSettings.NextSprintGadgetId
+                                        : teamSetting.JiraSettings.ActualSprintGadgetId;
                 var result = await client.PostAsync($"https://localhost:6000/api/report/Capacity/{gadgetId}", new StringContent(html, Encoding.UTF8, "application/json"));
 
                 result.EnsureSuccessStatusCode();
