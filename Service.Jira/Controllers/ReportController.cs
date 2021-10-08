@@ -25,15 +25,22 @@ namespace Service.Jira.Controllers
         }
 
         [HttpPost("SprintHistory")]
-        public List<SprintReport> GenerateSprintSummary([FromBody] JiraSettings jiraSettings)
+        public List<SprintReport> GenerateSprintSummary([FromBody] JiraSettings jiraSettings, DateTime? startDate, DateTime? endDate)
         {
-            return _reportLogic.GenerateSprintHistory(jiraSettings);
+            return _reportLogic.GenerateSprintHistory(jiraSettings, startDate, endDate);
         }
 
+        [Obsolete]
         [HttpPost("Capacity/{gadgetId}")]
         public bool GenerateCapacity(int gadgetId, [FromBody] string htmlText)
         {
             return _reportLogic.GenerateCapacity(gadgetId, htmlText);
+        }
+
+        [HttpPost("Gadget/{dashboardId}/{gadgetId}")]
+        public bool UpdateGadget(int dashboardId, int gadgetId, [FromBody] string htmlText)
+        {
+            return _reportLogic.UpdateGadget(dashboardId, gadgetId, htmlText);
         }
     }
 }

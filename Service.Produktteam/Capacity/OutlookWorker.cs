@@ -52,12 +52,13 @@ namespace Service.Produktteam.Capacity
                 Console.WriteLine($"Run next cycle: {runAt} Uhr");
 
                 // Thread.Sleep(sleepTime);
-                //await ReadCapacityFromOutlook();
-                //await WriteCapacityToJiraDashboard();
-                //await WriteCapacityToJiraDashboard(true);
-                //await WriteSprintSummaryToJiraDashboard();
+                await ReadCapacityFromOutlook();
+                await WriteCapacityToJiraDashboard();
+                await WriteCapacityToJiraDashboard(true);
+
                 try
                 {
+                    await WriteSprintSummaryToJiraDashboard();
                     await WriteVelocityToJiraDashboard();
                 }
                 catch (Exception e)
@@ -65,19 +66,6 @@ namespace Service.Produktteam.Capacity
                     Console.WriteLine(e);
                     throw;
                 }
-            }
-        }
-
-        private async Task WriteSprintSummaryToJiraDashboard()
-        {
-            var teamSettings = GetTeamSettings().Where(setting => setting.EndDate == null && setting.CreateReport).ToList();
-
-            foreach (var teamSetting in teamSettings)
-            {
-                var client = new HttpClient();
-                var startDate = teamSetting.StartDate.ToString("s");
-                var result = await client.PostAsync($"https://localhost:6000/api/report/SprintHistory",
-                    new StringContent(JsonConvert.SerializeObject(teamSetting.JiraSettings), Encoding.UTF8, "application/json"));
             }
         }
 
@@ -90,7 +78,61 @@ namespace Service.Produktteam.Capacity
                 var client = new HttpClient();
                 var startDate = teamSetting.StartDate.ToString("s");
                 var result = await client.GetFromJsonAsync<List<SprintReport>>($"https://localhost:6000/api/report/57/Velocity?startDate={startDate}");
+                result = result.Where(w => w.Name.ToLower().Contains(teamSetting.JiraSettings.FilterSprintName.ToLower()))
+                                .ToList();
 
+                var sprintSuccess = result.Count(s => s.Success == true);
+                var sprintFailed = result.Count(s => s.Success == false);
+                var velocityFull = Math.Round(result.Sum(s => s.Velocity) / result.Count, 2);
+                var velocity4Sprints = Math.Round(
+                    result.Where(w =>
+                            w.StartDate.CompareTo(DateTime.Now.AddDays(-1 * teamSetting.SprintLength * 5)) >= 0)
+                        .Where(w => w.Name.ToLower().Contains(teamSetting.JiraSettings.FilterSprintName.ToLower()))
+                        .Sum(s => s.Velocity)
+                    / (result.Count < 4 ? result.Count : 4), 2);
+
+                var velocity12Sprints = Math.Round(
+                    result.Where(w =>
+                            w.StartDate.CompareTo(DateTime.Now.AddDays(-1 * teamSetting.SprintLength * 13)) >= 0)
+                        .Where(w => w.Name.ToLower().Contains(teamSetting.JiraSettings.FilterSprintName.ToLower()))
+                        .Sum(s => s.Velocity)
+                    / (result.Count < 12 ? result.Count : 4), 2);
+
+                var html = $@"
+                                <meta http-equiv=""Content-Type"" content=""text/html; charset=ISO-8859-1""> 
+
+                                <svg id=""statSvg"" xmlns=""http://www.w3.org/2000/svg"" width=""350"" height=""50""> 
+                                    <text x=""10"" y=""15"" font-size=""14"" font-family=""Arial"" fill=""#404040"">Sprintziel erfüllt</text> 
+                                    <rect x=""120"" y=""0"" width=""{2 * (sprintSuccess * 100 / result.Count)}"" height=""20"" rx=""3"" ry=""3"" fill=""#90EE90""></rect> 
+                                    <rect x=""{120 + 2 * (sprintSuccess * 100 / result.Count)}"" y=""0"" width=""{2 * (sprintFailed * 100 / result.Count)}"" height=""20"" rx=""3"" ry=""3"" fill=""#FA8072""></rect>";
+                if (sprintSuccess > 0)
+                    html += $@"<text x=""{120 + (sprintSuccess * 100 / result.Count)}"" y=""15"" font-size=""12"" font-family=""Arial"" fill=""#404040"">{sprintSuccess}</text>";
+                if (sprintFailed > 0)
+                    html += $@"<text x=""{120 + 2 * (sprintSuccess * 100 / result.Count) + sprintFailed * 100 / result.Count}"" y=""15"" font-size=""12"" font-family=""Arial"" fill=""#404040"">{sprintFailed}</text>";
+
+                html +=
+                    $@"</svg><br>
+                                Velocity 4 Wochen : {velocity4Sprints} <br>
+                                Velocity 12 Wochen :  {velocity12Sprints}<br>
+                                Velocity Gesamt : {velocityFull}<br>";
+
+                var queryResult = await client.PostAsync($"https://localhost:6000/api/report/gadget/{teamSetting.JiraSettings.DashboardId}/{teamSetting.JiraSettings.VelocityGadgetId}",
+                    new StringContent(JsonConvert.SerializeObject(html), Encoding.UTF8, "application/json"));
+
+                queryResult.EnsureSuccessStatusCode();
+            }
+        }
+
+        private async Task WriteSprintSummaryToJiraDashboard()
+        {
+            var teamSettings = GetTeamSettings().Where(setting => setting.EndDate == null && setting.CreateReport).ToList();
+
+            foreach (var teamSetting in teamSettings)
+            {
+                var client = new HttpClient();
+                var startDate = teamSetting.StartDate.ToString("s");
+                var result = await client.PostAsync($"https://localhost:6000/api/report/SprintHistory?startDate={startDate}",
+                    new StringContent(JsonConvert.SerializeObject(teamSetting.JiraSettings), Encoding.UTF8, "application/json"));
             }
         }
 
@@ -139,7 +181,7 @@ namespace Service.Produktteam.Capacity
                 var gadgetId = calculateNextSprint
                                         ? teamSetting.JiraSettings.NextSprintGadgetId
                                         : teamSetting.JiraSettings.ActualSprintGadgetId;
-                var result = await client.PostAsync($"https://localhost:6000/api/report/Capacity/{gadgetId}", new StringContent(html, Encoding.UTF8, "application/json"));
+                var result = await client.PostAsync($"https://localhost:6000/api/report/Gadget/{teamSetting.JiraSettings.DashboardId}/{gadgetId}", new StringContent(html, Encoding.UTF8, "application/json"));
 
                 result.EnsureSuccessStatusCode();
             }

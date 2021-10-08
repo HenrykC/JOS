@@ -10,7 +10,8 @@ namespace Global.Models.Jira
         public int DashboardId { get; set; }
         public int ActualSprintGadgetId { get; set; }
         public int NextSprintGadgetId { get; set; }
-        public int SprintSummaryGadgetId { get; set; }
+        public int SprintHistoryGadgetId { get; set; }
+        public int VelocityGadgetId { get; set; }
 
         public string FilterSprintName { get; set; }
     }

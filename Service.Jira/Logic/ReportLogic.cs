@@ -104,9 +104,9 @@ namespace Service.Jira.Logic
         }
 
 
-        public List<SprintReport> GenerateSprintHistory(JiraSettings jiraSettings)
+        public List<SprintReport> GenerateSprintHistory(JiraSettings jiraSettings, DateTime? startDate, DateTime? endDate)
         {
-            var sprintReport = GetSprintReports(jiraSettings.JiraBoardId);
+            var sprintReport = GetSprintReports(jiraSettings.JiraBoardId, startDate, endDate);
             var content = new DashboardContent()
             {
                 Html = GenerateReportHtml(sprintReport.Where(w => w.Name.ToLower().Contains(jiraSettings.FilterSprintName.ToLower())).ToList()),
@@ -114,7 +114,7 @@ namespace Service.Jira.Logic
                 Title = "Sprint History"
             };
 
-            _dashboardRepository.UpdateGadget(_dashboardProfile.DashBoardId, jiraSettings.SprintSummaryGadgetId, content);
+            _dashboardRepository.UpdateGadget(jiraSettings.DashboardId, jiraSettings.SprintHistoryGadgetId, content);
 
             return sprintReport;
         }
@@ -129,6 +129,18 @@ namespace Service.Jira.Logic
             };
 
             return _dashboardRepository.UpdateGadget(_dashboardProfile.DashBoardId, gadgetId, content);
+        }
+
+        public bool UpdateGadget(int dashboardId, int gadgetId, string htmlText)
+        {
+            var content = new DashboardContent()
+            {
+                Html = htmlText,
+                IsConfigured = true,
+                Title = ""
+            };
+
+            return _dashboardRepository.UpdateGadget(dashboardId, gadgetId, content);
         }
 
         public SprintReport GetSprintReport(int sprintId)
@@ -204,11 +216,11 @@ namespace Service.Jira.Logic
                     //$"<rect x = \"{xPositionSprintGoal}\" y = \"{yBar}\" width = \"{50.0 * sprint.Scope}\" height = \"20\" rx = \"3\" ry = \"3\" style=\"stroke:{successColor};stroke-width:1;fill-opacity:0.0;stroke-opacity:0.9\" ></rect> \n" +
 
                     $"  <a href=\"{_dashboardProfile.JiraServer}/issues/?jql=project = PT AND (Key = {sprintGoalIssues}) \" target=\"_blank\">" +
-                    $"      <rect x = \"{xPositionSprintGoal}\" y = \"{yBar}\" width = \"{50.0 * sprint.Velocity}\" height = \"20\" rx = \"3\" ry = \"3\" fill = \"{velocityColor}\" ></rect> \n" +
+                    $"      <rect x = \"{xPositionSprintGoal}\" y = \"{yBar}\" width = \"{Math.Round(50.0 * sprint.Velocity)}\" height = \"20\" rx = \"3\" ry = \"3\" fill = \"{velocityColor}\" ></rect> \n" +
                     $"  </a>\n" +
 
                     $"  <a href=\"{_dashboardProfile.JiraServer}/issues/?jql=project = PT AND (Key = {otherIssues}) \" target=\"_blank\">" +
-                    $"      <rect x = \"{50.0 * sprint.Velocity + xPositionSprintGoal}\" y = \"{yBar}\" width = \"{50.0 * (sprint.Scope - sprint.Velocity)}\" height = \"20\" rx = \"3\" ry = \"3\" fill = \"{plannedColor}\" ></rect> \n" +
+                    $"      <rect x = \"{Math.Round(50.0 * sprint.Velocity + xPositionSprintGoal)}\" y = \"{yBar}\" width = \"{Math.Round(50.0 * (sprint.Scope - sprint.Velocity))}\" height = \"20\" rx = \"3\" ry = \"3\" fill = \"{plannedColor}\" ></rect> \n" +
                     $"  </a>\n\n";
 
                 yDescription += 30;
