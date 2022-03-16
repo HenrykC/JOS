@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30621.155
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DI", "DI\DI.csproj", "{83C66CAF-3487-40B4-A9D8-B498EFB79C30}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Service.Jira", "Service.Jira\Service.Jira.csproj", "{67D8EB04-4746-47C3-B4B3-25B5CCA8A065}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Service.Outlook", "Service.Outlook\Service.Outlook.csproj", "{CCD4FF78-CABF-48E1-B0F2-DA4F884A5D07}"
@@ -13,9 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Global", "Global\Global.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceBus", "ServiceBus\ServiceBus.csproj", "{414660A2-2181-49B1-B22A-673EA38E1946}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReportTester", "ReportTester\ReportTester.csproj", "{E2E36394-19D9-4E34-87BE-34C46E544196}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service.Produktteam", "Service.Produktteam\Service.Produktteam.csproj", "{7E2BF3CE-883D-443B-AC8C-4020D464275D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Service.Produktteam", "Service.Produktteam\Service.Produktteam.csproj", "{7E2BF3CE-883D-443B-AC8C-4020D464275D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +19,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{83C66CAF-3487-40B4-A9D8-B498EFB79C30}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{83C66CAF-3487-40B4-A9D8-B498EFB79C30}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{83C66CAF-3487-40B4-A9D8-B498EFB79C30}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{83C66CAF-3487-40B4-A9D8-B498EFB79C30}.Release|Any CPU.Build.0 = Release|Any CPU
 		{67D8EB04-4746-47C3-B4B3-25B5CCA8A065}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{67D8EB04-4746-47C3-B4B3-25B5CCA8A065}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{67D8EB04-4746-47C3-B4B3-25B5CCA8A065}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -43,10 +35,6 @@ Global
 		{414660A2-2181-49B1-B22A-673EA38E1946}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{414660A2-2181-49B1-B22A-673EA38E1946}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{414660A2-2181-49B1-B22A-673EA38E1946}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E2E36394-19D9-4E34-87BE-34C46E544196}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E2E36394-19D9-4E34-87BE-34C46E544196}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E2E36394-19D9-4E34-87BE-34C46E544196}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E2E36394-19D9-4E34-87BE-34C46E544196}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7E2BF3CE-883D-443B-AC8C-4020D464275D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7E2BF3CE-883D-443B-AC8C-4020D464275D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7E2BF3CE-883D-443B-AC8C-4020D464275D}.Release|Any CPU.ActiveCfg = Release|Any CPU
