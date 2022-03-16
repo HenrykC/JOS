@@ -29,7 +29,7 @@ namespace Service.Outlook.Repository
             ExchangeService service = new ExchangeService(ExchangeVersion.Exchange2007_SP1);
             Stopwatch watch = new Stopwatch();
             //var results = new List<Appointment>();
-            if (string.IsNullOrEmpty(_connectionProfile.UserName)) throw new ConfigurationException("Exchange username is not set in user.pwd");
+            if (string.IsNullOrEmpty(_connectionProfile.UserName)) throw new ConfigurationException("Exchange username is not set in appsettings.json / secret.json");
             if (string.IsNullOrEmpty(_connectionProfile.Password)) throw new ConfigurationException("Exchange password is not set in user.pwd");
             if (string.IsNullOrEmpty(_connectionProfile.Domain)) throw new ConfigurationException("Exchange domain is not set in user.pwd");
             if (string.IsNullOrEmpty(_connectionProfile.Email)) throw new ConfigurationException("Exchange email is not set in user.pwd");

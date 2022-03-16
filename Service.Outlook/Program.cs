@@ -1,11 +1,7 @@
+using Global.Models;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Service.Outlook
 {
@@ -21,7 +17,7 @@ namespace Service.Outlook
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>()
-                                .UseUrls("https://localhost:5000/");
+                                .UseUrls(Endpoints.Outlook.Base);
                 })
                 .UseWindowsService();
     }

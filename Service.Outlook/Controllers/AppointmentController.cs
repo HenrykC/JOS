@@ -2,9 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Global.Models;
 using Global.Models.Outlook;
 using Service.Outlook.Logic;
 
@@ -75,7 +77,7 @@ namespace Service.Outlook.Controllers
             html += "</table>\"";
 
             var client = new HttpClient();
-            var result = await client.PostAsync("https://localhost:6000/api/report/Capacity", new StringContent(html, Encoding.UTF8, "application/json"));
+            var result = await client.PostAsync(Endpoints.Jira.Capacity, new StringContent(html, Encoding.UTF8, "application/json"));
 
             result.EnsureSuccessStatusCode();
 

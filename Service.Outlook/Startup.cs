@@ -1,5 +1,3 @@
-using System;
-using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -8,8 +6,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using AutoMapper;
 using Global.Handler;
-using Global.Models.Profiles;
-using Newtonsoft.Json;
 using Service.Outlook.Logic;
 using Service.Outlook.Models.Mapping;
 using Service.Outlook.Models.Profiles;
@@ -29,11 +25,15 @@ namespace Service.Outlook
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var outlookConfig = Configuration
+                .GetSection(nameof(OutlookConnectionProfile))
+                .Get<OutlookConnectionProfile>();
+
             services.AddControllers();
 
             services.AddScoped<IAppointmentLogic, AppointmentLogic>();
             services.AddScoped<IAppointmentRepository, AppointmentRepository>();
-            services.AddSingleton<IOutlookConnectionProfile>(GetConnectionProfile());
+            services.AddSingleton<IOutlookConnectionProfile>(outlookConfig);
 
             services.AddSwaggerGen(c =>
             {
@@ -60,7 +60,7 @@ namespace Service.Outlook
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Service.Outlook v1"));
             }
 
-          //  app.UseExceptionHandler(ex => ex.Run(ExceptionHandler.Handle));
+            app.UseExceptionHandler(ex => ex.Run(ExceptionHandler.Handle));
 
             app.UseHttpsRedirection();
 
@@ -72,37 +72,6 @@ namespace Service.Outlook
             {
                 endpoints.MapControllers();
             });
-        }
-        private IOutlookConnectionProfile GetConnectionProfile()
-        {
-            var fileName = "D:\\JOS\\Outlook\\user.pwd";
-
-            if (!File.Exists(fileName))
-            {
-                File.WriteAllText(fileName, JsonConvert.SerializeObject(new OutlookConnectionProfile()
-                    {
-                        UserName = string.Empty,
-                        Password = string.Empty,
-                        Url = string.Empty,
-                        Domain = string.Empty,
-                        Email = string.Empty,
-                        MailServerUrl = string.Empty
-                    },
-                    Formatting.Indented));
-
-                throw new Exception();
-            }
-
-            var connectionProfile = JsonConvert.DeserializeObject<OutlookConnectionProfile>(File.ReadAllText(fileName));
-
-            if (string.IsNullOrEmpty(connectionProfile.UserName))
-            {
-                throw new Exception($"File not found: {Directory.GetCurrentDirectory()}");
-            }
-
-            //ToDo: Fehlerhandling
-
-            return connectionProfile;
         }
     }
 }
