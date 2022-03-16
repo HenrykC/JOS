@@ -6,6 +6,7 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Global.Models;
 using Global.Models.Jira;
 using Global.Models.Outlook;
 using Microsoft.Extensions.Configuration;
@@ -77,7 +78,7 @@ namespace Service.Produktteam.Capacity
             {
                 var client = new HttpClient();
                 var startDate = teamSetting.StartDate.ToString("s");
-                var result = await client.GetFromJsonAsync<List<SprintReport>>($"https://localhost:6000/api/report/57/Velocity?startDate={startDate}");
+                var result = await client.GetFromJsonAsync<List<SprintReport>>($"{Endpoints.Jira.Report}/57/Velocity?startDate={startDate}");
                 result = result.Where(w => w.Name.ToLower().Contains(teamSetting.JiraSettings.FilterSprintName.ToLower()))
                                 .ToList();
 
@@ -116,7 +117,7 @@ namespace Service.Produktteam.Capacity
                                 Velocity 12 Wochen :  {velocity12Sprints}<br>
                                 Velocity Gesamt : {velocityFull}<br>";
 
-                var queryResult = await client.PostAsync($"https://localhost:6000/api/report/gadget/{teamSetting.JiraSettings.DashboardId}/{teamSetting.JiraSettings.VelocityGadgetId}",
+                var queryResult = await client.PostAsync($"{Endpoints.Jira.Report}/gadget/{teamSetting.JiraSettings.DashboardId}/{teamSetting.JiraSettings.VelocityGadgetId}",
                     new StringContent(JsonConvert.SerializeObject(html), Encoding.UTF8, "application/json"));
 
                 queryResult.EnsureSuccessStatusCode();
@@ -131,7 +132,7 @@ namespace Service.Produktteam.Capacity
             {
                 var client = new HttpClient();
                 var startDate = teamSetting.StartDate.ToString("s");
-                var result = await client.PostAsync($"https://localhost:6000/api/report/SprintHistory?startDate={startDate}",
+                var result = await client.PostAsync($"{Endpoints.Jira.Report}/SprintHistory?startDate={startDate}",
                     new StringContent(JsonConvert.SerializeObject(teamSetting.JiraSettings), Encoding.UTF8, "application/json"));
             }
         }
@@ -181,7 +182,7 @@ namespace Service.Produktteam.Capacity
                 var gadgetId = calculateNextSprint
                                         ? teamSetting.JiraSettings.NextSprintGadgetId
                                         : teamSetting.JiraSettings.ActualSprintGadgetId;
-                var result = await client.PostAsync($"https://localhost:6000/api/report/Gadget/{teamSetting.JiraSettings.DashboardId}/{gadgetId}", new StringContent(html, Encoding.UTF8, "application/json"));
+                var result = await client.PostAsync($"{Endpoints.Jira.Report}/Gadget/{teamSetting.JiraSettings.DashboardId}/{gadgetId}", new StringContent(html, Encoding.UTF8, "application/json"));
 
                 result.EnsureSuccessStatusCode();
             }
@@ -256,7 +257,7 @@ namespace Service.Produktteam.Capacity
             {
                 try
                 {
-                    var result = await client.GetFromJsonAsync<List<DailyCapacity>>($"https://localhost:5000/api/Appointment/Capacity/?startDate={startDate}&endDate={endDate}&usermail={member}");
+                    var result = await client.GetFromJsonAsync<List<DailyCapacity>>($"{Endpoints.Outlook.Appointment}/Capacity/?startDate={startDate}&endDate={endDate}&usermail={member}");
                     result.ForEach(r => r.MeasureTimeStamp = measureTimeStamp);
                     using (var scope = _serviceScopeFactory.CreateScope())
                     {
