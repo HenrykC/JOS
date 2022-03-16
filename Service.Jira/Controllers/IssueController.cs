@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using Global.Models.Jira;
-using Service.Jira.Models;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using Service.Jira.Logic;
 
 namespace Service.Jira.Controllers

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Global.Models.Jira;
-using Service.Jira.Models;
 using Service.Jira.Repository;
 
 namespace Service.Jira.Logic

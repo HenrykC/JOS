@@ -211,10 +211,7 @@ namespace Service.Jira.Logic
                     $"  <a href=\"{_dashboardProfile.JiraServer}/issues/?jql=project = PT AND Sprint = {sprint.Id} \" target=\"_blank\">" +
                     $"      <text x=\"{xDescription}\" y=\"{yDescription}\" font-size=\"12\" font-family=\"Arial\" fill=\"#404040\">{sprint.Name}({success})</text> \n" +
                     $"  </a>\n" +
-
-
-                    //$"<rect x = \"{xPositionSprintGoal}\" y = \"{yBar}\" width = \"{50.0 * sprint.Scope}\" height = \"20\" rx = \"3\" ry = \"3\" style=\"stroke:{successColor};stroke-width:1;fill-opacity:0.0;stroke-opacity:0.9\" ></rect> \n" +
-
+                    
                     $"  <a href=\"{_dashboardProfile.JiraServer}/issues/?jql=project = PT AND (Key = {sprintGoalIssues}) \" target=\"_blank\">" +
                     $"      <rect x = \"{xPositionSprintGoal}\" y = \"{yBar}\" width = \"{Math.Round(50.0 * sprint.Velocity)}\" height = \"20\" rx = \"3\" ry = \"3\" fill = \"{velocityColor}\" ></rect> \n" +
                     $"  </a>\n" +

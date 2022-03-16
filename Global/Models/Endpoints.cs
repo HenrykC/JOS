@@ -13,8 +13,8 @@ namespace Global.Models
 
         public struct Jira
         {
-            public const string Base = "https://localhost:6000/";
-            public const string Capacity = "https://localhost:6000/api/report/Capacity";
+            public const string Base = "https://localhost:4000/";
+            public const string Capacity = "https://localhost:4000/api/report/Capacity";
         }
 
         

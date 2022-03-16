@@ -2,7 +2,6 @@
 using System.Linq;
 using Global.Models.Jira;
 using Global.Security;
-using Service.Jira.Models;
 using Newtonsoft.Json;
 using Service.Jira.Models.Profiles;
 using Service.Jira.Models.Repository;

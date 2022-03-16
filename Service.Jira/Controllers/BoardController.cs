@@ -1,13 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Global.Models.Jira;
 using Service.Jira.Logic;
 using Service.Jira.Models;
-using Service.Jira.Models.Repository;
 
 namespace Service.Jira.Controllers
 {

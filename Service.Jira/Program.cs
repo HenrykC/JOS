@@ -5,7 +5,9 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
+using Global.Models;
 
 namespace Service.Jira
 {
@@ -21,7 +23,7 @@ namespace Service.Jira
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>()
-                                .UseUrls("https://localhost:6000/");
+                                .UseUrls(Endpoints.Jira.Base);
                 })
                 .UseWindowsService();
     }

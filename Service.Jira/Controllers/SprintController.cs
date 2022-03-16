@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using Global.Models.Jira;
-using Service.Jira.Models;
 using Service.Jira.Logic;
 
 
