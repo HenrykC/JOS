@@ -25,5 +25,10 @@ namespace Service.Jira.Logic
         {
             return _issueRepository.GetAllIssuesBySprintId(sprintId);
         }
+
+        public IList<Issue> GetIssuesByJql(string jqlQuery)
+        {
+            return _issueRepository.GetIssuesByJql(jqlQuery);
+        }
     }
 }

@@ -18,6 +18,7 @@ namespace Service.Jira.Repository
         private readonly IMapper _mapper;
         private readonly Atlassian.Jira.Jira _jira;
         private readonly string _jiraPath = "rest/agile/1.0";
+        private readonly string _jiraPathV2 = "rest/api/2";
 
         public IssueRepository(IConnectionProfile connectionProfile, IMapper mapper)
         {
@@ -32,11 +33,19 @@ namespace Service.Jira.Repository
         {
             var queryResult = JsonConvert.DeserializeObject<IssueDbModel>(
                 _jira.RestClient.ExecuteRequestAsync(RestSharp.Method.GET,
-                        $"{_jiraPath}/issue/{key}")
+                        $"{_jiraPath}/issue/{key}?expand=")
                     .Result
                     .ToString());
 
-            return _mapper.Map<Issue>(queryResult);
+            var res = _jira.RestClient.ExecuteRequestAsync(RestSharp.Method.GET,
+                    $"{_jiraPathV2}/issue/{key}/changelog")
+                .Result.ToString();
+
+            var result = _mapper.Map<Issue>(queryResult);
+            var history =
+                result.Changelog.Histories.Where(w => w.Items.Any(s => s.Field.Equals(ChangeReason.StoryPoints)));
+
+            return result;
         }
 
         public IList<Issue> GetAllIssuesBySprintId(int sprintId)
@@ -60,6 +69,55 @@ namespace Service.Jira.Repository
             } while (!queryResult.IsLast && queryResult.Issues.Count > 0);
 
             return result;
+        }
+
+        public IList<Issue> GetIssuesByJql(string jqlQuery)
+        {
+            var result = new List<Issue>();
+            var startQueryAt = 0;
+            const int maxResults = 50;
+            SprintIssueQueryResult queryResult;
+
+            do
+            {
+                queryResult = JsonConvert.DeserializeObject<SprintIssueQueryResult>(
+                    _jira.RestClient.ExecuteRequestAsync(RestSharp.Method.GET,
+                            $"{_jiraPathV2}/search?jql={jqlQuery}&startAt={startQueryAt}&maxResults={maxResults}")
+                        .Result
+                        .ToString());
+
+                result.AddRange(queryResult.Issues.Select(s => _mapper.Map<Issue>(s)));
+                startQueryAt += maxResults;
+
+            } while (!queryResult.IsLast && queryResult.Issues.Count > 0);
+
+            result.ForEach(f =>
+            {
+                f.Epic = new Epic()
+                {
+                    Name = "",
+                    Key = ""
+                };
+
+                if (f.Fields.Customfield_10100 == null) return;
+
+                f.Epic = GetEpic(f.Fields.Customfield_10100);
+
+            });
+
+            return result;
+        }
+
+
+        private Epic GetEpic(string key)
+        {
+            var queryResult = JsonConvert.DeserializeObject<Epic>(
+                _jira.RestClient.ExecuteRequestAsync(RestSharp.Method.GET,
+                        $"{_jiraPath}/epic/{key}")
+                    .Result
+                    .ToString());
+
+            return queryResult;
         }
     }
 }

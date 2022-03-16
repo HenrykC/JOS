@@ -9,6 +9,7 @@ namespace Service.Jira.Models.Mapping
         {
             CreateMap<IssueDbModel, Issue>()
                 .ForMember(x => x.Estimation, opt => opt.MapFrom(src => src.Fields.Customfield_10106))
+                .ForMember(x => x.Changelog, opt => opt.MapFrom(src => src.Changelog))
                 .AfterMap((src, dest) =>
                 {
                     foreach (var sourcePropertyInfo in src.Fields.GetType().GetProperties())

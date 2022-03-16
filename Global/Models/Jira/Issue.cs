@@ -17,7 +17,9 @@ namespace Global.Models.Jira
         public Sprint Sprint { get; set; }
         public Priority Priority { get; set; }
         public Issuetype Issuetype { get; set; }
+        public Fields Fields { get; set; }
         public Project Project { get; set; }
+        public Changelog Changelog { get; set; }
         public List<FixVersion> FixVersions { get; set; }
         public object Resolution { get; set; }
         public double? Estimation { get; set; }
@@ -67,6 +69,7 @@ namespace Global.Models.Jira
         public string Self { get; set; }
         public string Key { get; set; }
         public Fields Fields { get; set; }
+        public Changelog Changelog { get; set; }
     }
 
     
@@ -231,7 +234,14 @@ namespace Global.Models.Jira
         //public object Customfield12200 { get; set; }
         public Epic Epic { get; set; }
         //public object Customfield12001 { get; set; }
-        //public object Customfield10100 { get; set; }
+        /// <summary>
+        /// Epic Link
+        /// </summary>
+        public string Customfield_10100 { get; set; } = string.Empty; //Epic Link
+        /// <summary>
+        /// Epic Name
+        /// </summary>
+        public string Customfield_10102 { get; set; } = string.Empty; //Epic Name
         //public object Customfield12202 { get; set; }
         //public object Customfield12201 { get; set; }
         //public object Customfield12204 { get; set; }
@@ -258,7 +268,7 @@ namespace Global.Models.Jira
         public DateTime Updated { get; set; }
         public object Timeoriginalestimate { get; set; }
         public string Description { get; set; }
-        //public object Customfield11103 { get; set; }
+        public string Customfield_11103 { get; set; }
         //public object Customfield11301 { get; set; }
         //public object Customfield11500 { get; set; }
         //public object Customfield11302 { get; set; }
@@ -394,5 +404,116 @@ namespace Global.Models.Jira
         public int VotesValue { get; set; }
         public bool HasVoted { get; set; }
     }
+
+    public class Author
+    {
+        public string Self { get; set; }
+        public string Name { get; set; }
+        public string Key { get; set; }
+        public string EmailAddress { get; set; }
+        public AvatarUrls AvatarUrls { get; set; }
+        public string DisplayName { get; set; }
+        public bool Active { get; set; }
+        public string TimeZone { get; set; }
+    }
+
+    public class Item
+    {
+        public string Field { get; set; }
+        public string Fieldtype { get; set; }
+        public string From { get; set; }
+        public string FromString { get; set; }
+        public string To { get; set; }
+        public string ToString { get; set; }
+    }
+
+    public class History
+    {
+        public string Id { get; set; }
+        public Author Author { get; set; }
+        public DateTime Created { get; set; }
+        public List<Item> Items { get; set; }
+    }
+
+    public class Changelog
+    {
+        public int StartAt { get; set; }
+        public int MaxResults { get; set; }
+        public int Total { get; set; }
+        public List<History> Histories { get; set; }
+    }
+
+    public static class ChangeReason
+    {
+        public static readonly string Status = "status";
+        public static readonly string Link = "Link";
+        public static readonly string Priority = "priority";
+        public static readonly string Rank = "Rank";
+        public static readonly string StoryPoints = "Story Points";
+        public static readonly string Sprint = "Sprint";
+        public static readonly string Assignee = "assignee";
+        public static readonly string ReleaseNotesDescription = "Release Notes Description";
+        public static readonly string ReleaseNotesSummary = "Release Notes Summary";
+        public static readonly string DefinitionofDone = "Definition of Done";
+        public static readonly string TestDoD = "Test DoD";
+        public static readonly string Resolution = "resolution";
+        public static readonly string FixVersion = "Fix Version";
+    }
+
+    public class To
+    {
+        public string Self { get; set; }
+        public string Description { get; set; }
+        public string IconUrl { get; set; }
+        public string Name { get; set; }
+        public string Id { get; set; }
+        public StatusCategory StatusCategory { get; set; }
+    }
+
+    public class Schema
+    {
+        public string Type { get; set; }
+        public string Items { get; set; }
+        public string Custom { get; set; }
+        public int CustomId { get; set; }
+    }
+
+    public class Summary
+    {
+        public bool Required { get; set; }
+        public Schema Schema { get; set; }
+        public string Name { get; set; }
+        public string Key { get; set; }
+        public bool HasDefaultValue { get; set; }
+        public List<string> Operations { get; set; }
+        public List<string> AllowedValues { get; set; }
+        public string DefaultValue { get; set; }
+    }
+
+    public class Colour
+    {
+        public bool Required { get; set; }
+        public Schema Schema { get; set; }
+        public string Name { get; set; }
+        public string Key { get; set; }
+        public bool HasDefaultValue { get; set; }
+        public List<string> Operations { get; set; }
+        public List<string> AllowedValues { get; set; }
+        public string DefaultValue { get; set; }
+    }
+
+    public class Transition
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public To To { get; set; }
+        public bool HasScreen { get; set; }
+        public bool IsGlobal { get; set; }
+        public bool IsInitial { get; set; }
+        public bool IsAvailable { get; set; }
+        public bool IsConditional { get; set; }
+        public Fields Fields { get; set; }
+    }
+
 
 }

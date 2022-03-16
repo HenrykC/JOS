@@ -1,4 +1,5 @@
-﻿using Global.Models.Jira;
+﻿using System.Collections.Generic;
+using Global.Models.Jira;
 using Service.Jira.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -21,6 +22,12 @@ namespace Service.Jira.Controllers
         public Issue Get(string key)
         {
             return _issueLogic.GetIssue(key);
+        }
+        
+        [HttpGet]
+        public IList<Issue> GetIssueByQuery(string jqlQuery)
+        {
+            return _issueLogic.GetIssuesByJql(jqlQuery);
         }
     }
 }

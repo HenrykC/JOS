@@ -8,5 +8,6 @@ namespace Service.Jira.Logic
     {
         Issue GetIssue(string key);
         IList<Issue> GetAllIssuesBySprintId(int sprintId);
+        IList<Issue> GetIssuesByJql(string jqlQuery);
     }
 }
